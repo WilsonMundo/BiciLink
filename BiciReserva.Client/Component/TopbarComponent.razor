@@ -1,0 +1,27 @@
+﻿@inject NavigationManager NavigationManager
+<header class="topbar">
+    <div class="topbar-left">
+        <RadzenButton Icon="menu" Click="@ToggleMenu" ButtonStyle="ButtonStyle.Light" />
+    </div>
+
+    <div class="topbar-right">        
+        <RadzenButton Click="@(() => NavigationManager.NavigateTo("/salir"))"
+                      Text="Sign out" Icon="logout"
+                      ButtonStyle="ButtonStyle.Success"
+                      Variant="Variant.Flat" />
+       
+    </div>
+
+    </header>
+
+@code {
+    [Parameter] public EventCallback OnToggleMenu { get; set; }
+
+    private async Task ToggleMenu()
+    {
+        if (OnToggleMenu.HasDelegate)
+        {
+            await OnToggleMenu.InvokeAsync();
+        }
+    }
+}

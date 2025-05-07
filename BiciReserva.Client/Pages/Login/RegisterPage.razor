@@ -1,0 +1,96 @@
+﻿@layout Layout.LoginLayout
+@page "/register"
+
+@inject NavigationManager NavigationManager
+@inject NotificationService NotificationService
+@inject IRepository repository
+@inject DialogService DialogService
+
+<PageTitle>Registro</PageTitle>
+
+<div class="login-page">
+    <div class="login-container">
+        <div class="login-form">
+            <NavLink href="/main" class="text-decoration-none">
+                <h1><span class="logo-green">BiciLink</span></h1>
+            </NavLink>
+
+            <RadzenTemplateForm Data="@registerUser" TItem="UserRegister" Submit="@OnSubmit">
+                <div class="row g-2 g-md-3">
+                    <div class="col-md-6">
+                        <RadzenLabel Text="Nombre" Component="name" />
+                        <RadzenTextBox Name="name" @bind-Value="@registerUser.name" Placeholder="Nombre completo"
+                                       Style="width: 100%; height: 2.25rem;" />
+                        <RadzenDataAnnotationValidator Component="name" />
+                    </div>
+
+                    <div class="col-md-6">
+                        <RadzenLabel Text="Email" Component="Login" />
+                        <RadzenTextBox Name="Login" @bind-Value="@registerUser.Login" Placeholder="Correo electrónico"
+                                       Style="width: 100%; height: 2.25rem;" />
+                        <RadzenDataAnnotationValidator Component="Login" />
+                    </div>
+
+                    <div class="col-md-6">
+                        <RadzenLabel Text="Contraseña" Component="Password" />
+                        <RadzenPassword Name="Password" @bind-Value="@registerUser.Password" Placeholder="Contraseña"
+                                        Style="width: 100%; height: 2.25rem;" />
+                        <RadzenDataAnnotationValidator Component="Password" />
+                    </div>
+
+                    <div class="col-md-6">
+                        <RadzenLabel Text="Confirmar Contraseña" Component="confirmPassword" />
+                        <RadzenPassword Name="confirmPassword" @bind-Value="@registerUser.confirmPassword"
+                                        Placeholder="Confirmar contraseña" Style="width: 100%; height: 2.25rem;" />
+                        <RadzenDataAnnotationValidator Component="confirmPassword" />
+                        <RadzenCompareValidator Visible=@(!string.IsNullOrEmpty(registerUser.confirmPassword)) Value=@registerUser.Password Component="confirmPassword" Text="Las contraseñas deben ser las mismas" />
+                    </div>
+
+                    <div class="col-6 col-md-6">
+                        <RadzenLabel Text="Teléfono" Component="telefono" />
+                        <RadzenTextBox Name="telefono" @bind-Value="@registerUser.telefono" Placeholder="Número de teléfono"
+                                       Style="width: 100%; height: 2.25rem;" />
+                        <RadzenDataAnnotationValidator Component="telefono" />
+                    </div>
+
+                    <div class="col-6 col-md-6">
+                        <RadzenLabel Text="NIT" Component="nit" />
+                        <RadzenTextBox Name="nit" @bind-Value="@registerUser.nit" Placeholder="Número de NIT"
+                                       Style="width: 100%; height: 2.25rem;" />
+                        <RadzenDataAnnotationValidator Component="nit" />
+                    </div>
+
+                    <div class="col-12">
+                        <RadzenLabel Text="Dirección (opcional)" Component="direccion" />
+                        <RadzenTextBox Name="direccion" @bind-Value="@registerUser.direccion" Placeholder="Dirección"
+                                       Style="width: 100%; height: 2.25rem;" />
+                    </div>
+
+                    <div class="col-12 d-grid g-2 g-md-3 mt-2">
+                        <RadzenButton Text="Registrarme"
+                                      ButtonType="ButtonType.Submit"
+                                      ButtonStyle="ButtonStyle.Success"
+                                      Style="width: 100%; font-size: 1rem; padding: 0.75rem;" />
+                    </div>
+                </div>
+            </RadzenTemplateForm>
+
+        </div>
+
+        <div class="login-visual">
+            <div class="visual-content">
+                <img src="image/imageLogin.png" alt="Visual BiciLink" />
+                <RadzenButton Text="Volver al Login" ButtonStyle="ButtonStyle.Success"
+                              Variant="Variant.Flat"
+                              Click="@(() => NavigationManager.NavigateTo("/"))"
+                              Style="width: 100%; font-size: 1rem; padding: 0.75rem;" />
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+  
+}
+
+

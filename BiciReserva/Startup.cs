@@ -1,7 +1,25 @@
-﻿using Microsoft.OpenApi.Models;
+﻿using BiciReserva.Services.DataBaseValidate;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
+using Radzen;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Reflection;
+using System.Text;
 using System.Text.Json.Serialization;
+using Microsoft.EntityFrameworkCore;
+using DataAccess;
+using Domain.Interface.DataAcces;
+using DataAccess.Repository.Seguridad;
+using DataAccess.Repository.Utils;
+using BusinessLogic.Services.User;
+using BusinessLogic.Interface;
+using BiciReserva.Services;
+using BiciReserva.Middelwares;
+using Microsoft.AspNetCore.Mvc;
+using Shared.DTO;
+using BiciReserva.Components;
 
 namespace BiciReserva
 {
@@ -15,12 +33,80 @@ namespace BiciReserva
         }
         public void ConfigureServices(IServiceCollection services)
         {
+
+            string CadenaConexion = Configuration["SQLConnection"] ??throw new Exception("Cadena de conexion Vacia");
+
             services.AddRazorComponents()
+                .AddInteractiveServerComponents()
                 .AddInteractiveWebAssemblyComponents();
 
+            services.AddScoped<DatabaseConnectionManager>();
+            services.AddDbContext<RegisterDBContext>((serviceProvider, options) =>
+            {
+                var connectionManager = serviceProvider.GetRequiredService<DatabaseConnectionManager>();
+                var connectionString = connectionManager.ValidateConnectionString(CadenaConexion, "UserBiciLink");
+                options.UseSqlServer(connectionString);
+            });
+            services.AddIdentity<IdentityUser, IdentityRole>()
+                .AddEntityFrameworkStores<RegisterDBContext>()
+                .AddDefaultTokenProviders();
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(options =>
+                {
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuer = false,
+                        ValidateAudience = false,
+                        ValidateLifetime = true,
+                        ValidateIssuerSigningKey = false,
+                        IssuerSigningKey = new SymmetricSecurityKey(
+                            Encoding.UTF8.GetBytes(Configuration["llavejwt"])),
+                        ClockSkew = TimeSpan.Zero
+
+                    }; options.Events = new JwtBearerEvents
+                    {
+                        OnMessageReceived = context =>
+                        {
+                            var token = context.Request.Cookies["AuthToken"];
+                            if (!string.IsNullOrEmpty(token))
+                            {
+                                context.Token = token;
+                            }
+
+                            return Task.CompletedTask;
+                        },
+                    };
+                });
+            services.AddApiAuthorization();
+            services.AddCascadingAuthenticationState();
             services.AddControllers().AddJsonOptions(x =>
             x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
             services.AddEndpointsApiExplorer();
+            services.AddControllersWithViews();
+            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+            services.AddHttpContextAccessor();
+            services.Configure<ApiBehaviorOptions>(options =>
+            {
+                options.InvalidModelStateResponseFactory = context =>
+                {
+                    var errors = context.ModelState
+                        .Where(kvp => kvp.Value.Errors.Count > 0)
+                        .ToDictionary(
+                            kvp => kvp.Key,
+                            kvp => kvp.Value.Errors.Select(e => e.ErrorMessage).ToArray()
+                        );
+
+                    var errorResponse = new ResultAPI<Dictionary<string, string[]>>
+                    {
+                        error = true,
+                        message = "Validacion fallida",
+                        code = StatusHttpResponse.BadRequest,
+                        result = errors
+                    };
+
+                    return new BadRequestObjectResult(errorResponse);
+                };
+            });
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo { Title = " Bici Link", Version = "v1" });
@@ -57,7 +143,11 @@ namespace BiciReserva
 
 
             });
-
+            services.AddRadzenComponents();
+            services.AddScoped<ResponseService>();
+            services.AddScoped<IUsuarioRepository, UsuarioRepository>();
+            services.AddScoped<IUtilsRepository, UtilsRepository>();
+            services.AddScoped<IIAuthService, IAuthService>();
         }
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
@@ -72,11 +162,22 @@ namespace BiciReserva
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
+            app.UseMiddleware<DecodificaUrl>();
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "Bici Link  V1");
                 c.SwaggerEndpoint("/swagger/v2/swagger.json", "Bici Link  V2");
+            });
+            app.UseRouting();
+            app.UseAuthentication();
+            app.UseAuthorization();
+            app.UseAntiforgery();
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
+                endpoints.MapSwagger();
+               
             });
         }
     }

@@ -1,0 +1,35 @@
+﻿.topbar {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 0.75rem 1rem;
+	background-color: var(--rz-base-light);
+	color: white;
+	position: sticky;
+	top: 0;
+	z-index: 1000;
+}
+
+.topbar-left {
+	display: flex;
+	align-items: center;
+}
+
+.topbar-right {
+	display: flex;
+	gap: 1rem;
+	align-items: center;
+	justify-content: flex-end;
+	flex: 1;
+	flex-wrap: wrap;
+}
+
+.topbar-link {
+	color: white;
+	text-decoration: none;
+	font-weight: 500;
+}
+
+	.topbar-link:hover {
+		text-decoration: underline;
+	}
