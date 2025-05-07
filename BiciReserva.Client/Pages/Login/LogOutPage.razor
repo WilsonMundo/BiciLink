@@ -1,0 +1,15 @@
+﻿@inject ILoginService loginService;
+@inject NavigationManager navigationManager;
+
+@page "/salir"
+
+
+@code {
+	protected async override Task OnInitializedAsync()
+	{
+		await base.OnInitializedAsync();
+		await loginService.LogOut();
+		navigationManager.NavigateTo("/main");
+		
+	}
+}

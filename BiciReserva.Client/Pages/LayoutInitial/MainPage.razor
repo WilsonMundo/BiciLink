@@ -1,0 +1,107 @@
+﻿@page "/main"
+@layout Layout.LoginLayout
+<title>Home</title>
+<div class="landing-page">
+    <!-- HERO LIMPIO -->
+    <section class="hero-section">
+        <div class="hero-content">
+            <div class="text-content">
+                <h1>
+                    <span class="hero-dark">La forma más </span>
+                    <strong class="hero-dark">inteligente</strong>
+                    <span class="hero-dark"> de moverte en tu ciudad con </span>
+                    <span class="brand-name"> BiciLink</span>
+                </h1>
+
+                <p>
+                    BiciLink te permite reservar, usar y devolver bicicletas desde tu celular. sin complicaciones.
+                    Con tecnología GPS y estaciones inteligentes, tenés el control de tu movilidad.
+                </p>
+
+                <div class="hero-buttons">
+                    <NavLink class="btnn btn-green" href="/register">Comenzar</NavLink>
+                    <NavLink class="btnn btn-base" href="/login">Iniciar sesión</NavLink>
+                </div>
+            </div>
+
+            <div class="hero-image">
+                <img src="image/image1.png" alt="Imagen destacada" />
+            </div>
+        </div>
+    </section>
+
+
+    <!-- FEATURES -->
+    <section class="css-carousel">
+        <h2>¿Por qué usar <span class="brand">BiciLink</span>?</h2>
+
+        <div class="carousel-wrapper">
+            <div class="carousel-track">
+                @foreach (var item in Items)
+                {
+                    <div class="carousel-item feature-card">
+                        <h3>@item.Title</h3>
+                        <p>@item.Description</p>
+                    </div>
+
+                }
+
+
+                @foreach (var item in Items)
+                {
+                    <div class="carousel-item feature-card">
+                        <h3>@item.Title</h3>
+                        <p>@item.Description</p>
+                    </div>
+                }
+
+            </div>
+        </div>
+    </section>
+
+
+    <section class="about">
+        <div class="about-content">
+            <div class="about-text">
+                <h2>Nuestra misión</h2>
+                <p>
+                    Promover un transporte urbano sostenible y eficiente mediante un sistema de bicicletas inteligentes
+                    disponible para todos.
+                </p>
+            </div>
+            <div class="about-image">
+                <img src="image/bicili.png" alt="Sobre BiciLink" />
+            </div>
+        </div>
+    </section>
+
+
+    <footer class="footer">
+        <p>© 2025 BiciLink. Todos los derechos reservados.</p>
+    </footer>
+
+</div>
+
+@code {
+
+    private List<FeatureItem>? Items;
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        await base.OnInitializedAsync();
+        Items = new()
+        {
+            new FeatureItem { Title = "Reservas Rápidas", Description = "Seleccioná origen y destino en segundos. Sin filas, sin esperas." },
+            new FeatureItem { Title = "Ubicación en Tiempo Real", Description = "Seguimiento GPS para tu seguridad y comodidad." },
+            new FeatureItem { Title = "Devolución Automatizada", Description = "Estacionás, asegurás la bici y listo." },
+            new FeatureItem { Title = "Costo según Ruta", Description = "El precio varía según distancia y tiempo." },
+            new FeatureItem { Title = "Elegí tu Bicicleta", Description = "Eléctricas, urbanas o deportivas para vos." },
+            new FeatureItem { Title = "Soporte 24/7", Description = "Asistencia en todo momento para resolver dudas o incidentes." },
+            new FeatureItem { Title = "Rutas Sugeridas", Description = "Explorá rutas seguras y recomendadas según tu ubicación." },
+            new FeatureItem { Title = "Historial de Viajes", Description = "Revisá tus trayectos anteriores y estadísticas personales." },
+        };
+    }
+
+}
+

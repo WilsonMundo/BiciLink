@@ -1,0 +1,22 @@
+﻿@code {
+    @inject NavigationManager Navigation
+
+    @using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+    @code {
+        protected override void OnInitialized()
+        {
+            //Navigation.NavigateTo(
+            //    $"authentication/login?returnUrl={Uri.EscapeDataString(Navigation.Uri)}");
+            base.OnInitialized();
+          
+            try
+            {
+                Navigation.NavigateTo("/main");
+            }
+            catch (NavigationException ex)
+            {
+                Console.WriteLine("Navegación fallida: " + ex.Message);
+            }
+        }
+    }
+}

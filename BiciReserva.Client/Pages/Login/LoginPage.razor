@@ -1,0 +1,62 @@
+﻿@layout LoginLayout
+@page "/login"
+
+
+@inject NavigationManager NavigationManager
+@inject NotificationService NotificationService
+@inject IRepository repository
+@inject DialogService DialogService
+@inject ILoginService loginService
+
+<PageTitle>Login</PageTitle>
+
+<div class="login-page">
+    <div class="login-container">
+        <div class="login-form">            
+            <NavLink href="/main" class="text-decoration-none">
+                <h1><span class="logo-green">BiciLink</span></h1>
+            </NavLink>
+            <RadzenTemplateForm Data="@userInfo" TItem="UserInfo" Submit="@OnSubmit">
+                <div class="form-group">
+                    <RadzenLabel Text="Email" Component="email" />
+                    <RadzenTextBox Name="email" 
+                                   Placeholder="Email"
+                                   @bind-Value="@userInfo.Login"                                                                      
+                                   Style="width: 100%; height: 2.25rem; font-size: 0.95rem;" />
+                    <RadzenDataAnnotationValidator Component="email"  />
+                </div>
+
+                <div class="form-group">
+                    <RadzenLabel Text="Contraseña" Component="password" />
+                    <RadzenPassword Name="Password" 
+                                    Placeholder="Password"
+                                    @bind-Value="@userInfo.Password"
+                                    Style="width: 100%; height: 2.25rem; font-size: 0.95rem;"/>
+                    <RadzenDataAnnotationValidator Component="Password"   />
+                </div>
+
+                <div class="form-group">
+                    <a href="#" class="forgot-link">Olvidé Contraseña?</a>
+                    <RadzenButton ButtonStyle="ButtonStyle.Success" ButtonType="ButtonType.Submit" Text="Iniciar sesión" Style="margin-top: 0.5rem;" />
+                </div>
+
+            </RadzenTemplateForm>
+        </div>
+
+        <div class="login-visual">
+            <div class="visual-content">
+                <img src="image/imageLogin.png" alt="Visual BiciLink" />
+                <RadzenButton ButtonStyle="ButtonStyle.Success"
+                              ButtonType="ButtonType.Button"
+                              Text="Registrarme"
+                              Style="width: 100%;font-size: 1rem;padding: 0.75rem;"
+                              Click="@(() => NavigationManager.NavigateTo("/register"))" />
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@code {
+
+}

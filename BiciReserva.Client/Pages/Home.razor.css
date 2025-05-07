@@ -1,0 +1,36 @@
+﻿
+	.user-main-dashboard .feature-card:hover {
+		transform: translateY(-5px);
+		box-shadow: 0 12px 20px rgba(0, 0, 0, 0.15);
+	}
+	.user-main-dashboard .feature-card img {
+		max-height: 180px;
+		object-fit: contain;
+	}
+	.user-main-dashboard .feature-card img {
+		max-height: 180px;
+		width: auto;
+		margin-bottom: 1rem;
+		display: block;
+		margin-left: auto;
+		margin-right: auto;
+		object-fit: contain;
+	}
+.user-main-dashboard .feature-card {
+	min-height: 420px; /* Ajusta si lo necesitas */
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	background-color: white;
+	border-radius: 12px;
+	box-shadow: 0 6px 15px rgba(0, 0, 0, 0.05);
+	transition: transform 0.3s ease, box-shadow 0.3s ease;
+	padding: 1.5rem;
+	text-align: center;
+}
+
+@media (max-width: 768px) {
+	.user-main-dashboard .feature-card {
+		min-height: unset;
+	}
+}

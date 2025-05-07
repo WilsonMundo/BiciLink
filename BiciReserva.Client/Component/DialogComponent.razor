@@ -1,0 +1,25 @@
+﻿@inject DialogService DialogService;
+@inject NotificationService NotificationService
+<RadzenStack Gap="1.5rem">
+    <p><b>@DialogMessage </b></p>
+    <RadzenStack Orientation="Orientation.Horizontal" Gap="0.5rem" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.SpaceBetween">
+        <RadzenStack Orientation="Orientation.Horizontal">
+            <RadzenButton Text="Ok" Click="@OnConfirm" Style="width: 80px;"  />
+            <RadzenButton Text="Cancel" Click="@EventoCierraDialog" ButtonStyle="ButtonStyle.Light" />
+        </RadzenStack>
+    </RadzenStack>
+</RadzenStack>
+
+@code {
+    [Parameter]
+    public string DialogMessage { get; set; } = null!;
+    public void EventoCierraDialog()
+    {
+        DialogService.Close(false);
+    }
+    public void OnConfirm()
+    {
+        DialogService.Close(true);
+    }
+
+}
