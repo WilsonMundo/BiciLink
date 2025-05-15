@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
+using Domain.ModelContext;
 using Domain.ModelsRegister;
 using Shared.Auth.DTO;
+using Shared.DTO;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -33,7 +35,29 @@ namespace BusinessLogic.Services
                 .ForMember(
                 dest => dest.Direccion,
                 opt => opt.MapFrom(src => src.direccion)
-                );                
+                );
+            CreateMap<BicycleDTO, Bicicletum>()
+                .ForMember(
+                dest => dest.EstadoBicicletaId,
+                opt => opt.MapFrom(src => src.EstadoBicicletaId)
+                )
+                .ForMember(
+                dest => dest.Descripcion,
+                opt => opt.MapFrom(src => src.Descripcion)
+                )
+                .ForMember(
+                dest => dest.Caracteristica,
+                opt => opt.MapFrom(src => src.Caracteristica)
+                )
+                .ForMember(
+                dest => dest.Imagen,
+                opt => opt.MapFrom(src => src.Imagen)
+                )
+                .ForMember(
+                dest => dest.Imagen1,
+                opt => opt.MapFrom(src => src.Imagen1)
+                );
+            CreateMap<EstacionDTO, Estacion>();
         }
         
     }

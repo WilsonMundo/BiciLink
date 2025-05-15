@@ -1,0 +1,87 @@
+﻿@inject NotificationService NotificationService
+@inject IRepository Repository
+@inject DialogService DialogService
+
+<PageTitle>Bicicletas</PageTitle>
+
+@if (bicycles == null)
+{
+    <CargandoComponent />
+}
+else    
+{
+    <h3>Listado de Bicicletas</h3>
+
+    <RadzenDataGrid TItem="BicycleDTO"
+                    Data="@bicycles"
+                    @ref="bicycleGrid"
+                    EditMode="@editMode"
+                    RowUpdate="@OnUpdateRow"
+                    RowCreate="@OnCreateRow"
+                    RowRender="@OnRowRender"
+                    AllowSorting="true"
+                    AllowPaging="true"                   
+                    PageSize="10"
+                    AllowAlternatingRows="false"
+                    IsLoading="@isLoading"
+                    Sort="@ShowLoading"
+                    Page="@ShowLoading"
+                    Group="@ShowLoading"
+                    Filter="@ShowLoading">
+
+        <Columns>
+            <RadzenDataGridColumn TItem="BicycleDTO" Property="bicycleId" Title="ID" Width="80px" />
+
+            <RadzenDataGridColumn TItem="BicycleDTO" Property="Descripcion" Title="Descripción" Width="170px">
+                <EditTemplate Context="item">
+                    <RadzenTextBox @bind-Value="item.Descripcion" Style="width: 100%" Name="Descripcion" />
+                    <RadzenRequiredValidator Component="Descripcion" Text="Campo requerido" Popup="true" />
+                </EditTemplate>
+            </RadzenDataGridColumn>
+
+            <RadzenDataGridColumn TItem="BicycleDTO" Property="codigo" Title="Código" Width="100px">
+                <EditTemplate Context="item">
+                    <RadzenTextBox @bind-Value="item.codigo" Style="width: 100%" Name="codigo" />
+                    <RadzenRequiredValidator Component="codigo" Text="Campo requerido" Popup="true" />
+                </EditTemplate>
+            </RadzenDataGridColumn>
+
+            <RadzenDataGridColumn Property="EstadoString" Title="Estado" Width="120px">
+                <EditTemplate Context="item">
+                    <RadzenDropDown @bind-Value="item.EstadoBicicletaId"
+                                    Data="@estados"
+                                    TextProperty="@nameof(GStateGeneralDTO.descripcion)"
+                                    ValueProperty="@nameof(GStateGeneralDTO.idEstado)"
+                                    Style="width: 100%"
+                                    Name="EstadoBicicletaId"
+                                    InputAttributes="@(new Dictionary<string,object>(){ { "aria-label", "Select GStateGeneralDTO" }})" />
+                    <RadzenRequiredValidator Component="EstadoBicicletaId" Text="Campo requerido" Popup="true" />
+                </EditTemplate>
+            </RadzenDataGridColumn>
+            
+            <RadzenDataGridColumn TItem="BicycleDTO" Context="item" TextAlign="TextAlign.Right" Width="120px">
+                <Template Context="item">
+                    <RadzenButton Icon="add_circle" Size="ButtonSize.Small" ButtonStyle="ButtonStyle.Success" Click="() => InsertAfterRow(item)" Disabled="@(editMode == DataGridEditMode.Single && bicyclesToInsert.Count > 0)" />
+                    <RadzenButton Icon="edit" Size="ButtonSize.Small" ButtonStyle="ButtonStyle.Light" Click="() => EditRow(item)" class="rz-ml-1" />
+                    <RadzenButton Icon="delete" Size="ButtonSize.Small" ButtonStyle="ButtonStyle.Danger" Click="() => DeleteRow(item)" class="rz-ml-1" />
+                </Template>
+                <EditTemplate Context="item">
+                    <RadzenButton Icon="check" Size="ButtonSize.Small" ButtonStyle="ButtonStyle.Success" Click="() => SaveRow(item)" />
+                    <RadzenButton Icon="close" Size="ButtonSize.Small" ButtonStyle="ButtonStyle.Light" Click="() => CancelEdit(item)" class="rz-ml-2" />
+                </EditTemplate>
+            </RadzenDataGridColumn>
+        </Columns>
+    </RadzenDataGrid>
+
+    <RadzenButton Icon="add_circle"
+                  Text="Nueva Bicicleta"
+                  ButtonStyle="ButtonStyle.Success"
+                  Style="margin-top: 1rem"
+                  Click="@InsertRow"
+                  Disabled="@(editMode == DataGridEditMode.Single && bicyclesToInsert.Count > 0)"
+                  IsBusy="@insert"
+                  BusyText="Procesando" />
+}
+@code {
+
+}

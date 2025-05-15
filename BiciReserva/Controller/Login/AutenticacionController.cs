@@ -83,6 +83,30 @@ namespace BiciReserva.Controller.Login
                 return StatusCode(StatusCodes.Status500InternalServerError, "Error interno comunicar a soporte");
             }
         }
+
+        [HttpPost("Auth/login")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetLoginRest([FromBody] UserInfo userInfo)
+        {
+            try
+            {
+                ResultAPI<UserToken?> userToken = await _iIAuthService.ValidateUser(userInfo);
+                if (userToken != null && userToken.result != null)
+                {
+                    return _response.CreateResponse(userToken, userToken.code);
+                }
+                else
+                {
+                    return StatusCode(StatusCodes.Status500InternalServerError, "Error interno comunicar a soporte");
+                }
+
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "Error al autenticar login");
+                return StatusCode(StatusCodes.Status500InternalServerError, "Error interno comunicar a soporte");
+            }
+        }
         [HttpPost("register")]        
         [AllowAnonymous]
         public async Task<IActionResult> RegisterUser([FromBody] UserRegister user)

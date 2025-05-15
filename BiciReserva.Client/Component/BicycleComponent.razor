@@ -1,0 +1,102 @@
+﻿@inject NavigationManager Navigation
+@inject NotificationService NotificationService
+@inject IRepository Repository
+
+<RadzenCard Class="p-4 mt-4">
+    <h3 class="text-center text-success mb-4">Registrar Nueva Bicicleta</h3>
+    <div class="row">
+        <div class="col-12 col-md-9 col-lg-8">
+            <RadzenTemplateForm @ref="form" Data="@bicycle" TItem="BicycleDTO" Submit="@OnSubmit">
+                <div class="row g-3">
+                    <div class="col-12">
+                        <RadzenLabel Text="Descripción" Component="Descripcion" />
+                        <RadzenTextBox Name="Descripcion" @bind-Value="bicycle.Descripcion" Style="width: 100%;" />
+                        <RadzenRequiredValidator Component="Descripcion" Text="Campo requerido" />
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <RadzenLabel Text="Código" Component="codigo" />
+                        <RadzenTextBox Name="codigo" @bind-Value="bicycle.codigo" Style="width: 100%;" />
+                        <RadzenRequiredValidator Component="codigo" Text="Campo requerido" />
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <RadzenLabel Text="Estado" Component="EstadoBicicletaId" />
+                        <RadzenDropDown @bind-Value=@bicycle.EstadoBicicletaId Data=@estados
+                                        TextProperty="descripcion"
+                                        ValueProperty="idEstado"
+                                        Style="width: 100%;"
+                                        Name="EstadoBicicletaId" />
+                        <RadzenRequiredValidator Component="EstadoBicicletaId" Text="Campo requerido" />
+                    </div>
+
+                    <div class="col-12">
+                        <RadzenLabel Text="Características" Component="Caracteristica" />
+                        <RadzenTextArea Name="Caracteristica"
+                                        @bind-Value="bicycle.Caracteristica"
+                                        Style="width: 100%;"
+                                        Cols="2"
+                                        Rows="4" />
+                    </div>
+
+                    <div class="col-12 col-md-6">
+                        <RadzenLabel Text="Imagen Principal (URL)" Component="Imagen" />
+                        <RadzenTextBox Name="Imagen" @bind-Value="bicycle.Imagen" Style="width: 100%;" />
+
+                    </div>
+                    <div class="col-12 col-md-6">
+
+                        <RadzenLabel Text="Imagen Alternativa (URL)" Component="Imagen1" />
+                        <RadzenTextBox Name="Imagen1" @bind-Value="bicycle.Imagen1" Style="width: 100%;" />
+                    </div>
+
+
+                    <div class="col-12 d-grid gap-2 mt-4">
+                        <RadzenButton Text="Registrar Bicicleta"
+                                      ButtonType="ButtonType.Submit"
+                                      ButtonStyle="ButtonStyle.Success"
+                                      IsBusy="@insert"
+                                      BusyText="Procesando"
+                                      Style="width: 100%; font-size: 1rem; padding: 0.75rem;" />
+                    </div>
+
+                </div>
+
+            </RadzenTemplateForm>
+        </div>
+        <div class="col-12 col-md-6 col-lg-4">
+            <div class="row g-3 mt-3">
+                <div class="col-12">
+                    <div class="image-card shadow-sm p-2 rounded text-center">
+                        @if (!string.IsNullOrWhiteSpace(bicycle.Imagen))
+                        {
+                            <img src="@bicycle.Imagen" alt="Imagen 1" class="img-fluid rounded" />
+                        }
+                        else
+                        {
+                            <p class="text-muted">Sin imagen principal</p>
+                        }
+                    </div>
+                </div>
+
+                <div class="col-12">
+                    <div class="image-card shadow-sm p-2 rounded text-center">
+                        @if (!string.IsNullOrWhiteSpace(bicycle.Imagen1))
+                        {
+                            <img src="@bicycle.Imagen1" alt="Imagen secundaria" class="img-fluid rounded" />
+                        }
+                        else
+                        {
+                            <p class="text-muted">Sin imagen secundaria</p>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</RadzenCard>
+
+@code {
+    BicycleDTO bicycle = new BicycleDTO();
+
+}
+
