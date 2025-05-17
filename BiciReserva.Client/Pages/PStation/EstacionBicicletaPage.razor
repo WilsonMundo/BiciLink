@@ -1,0 +1,56 @@
+﻿@page "/assign-bicycles"
+@inject IRepository Repository
+@inject NotificationService NotificationService
+
+<PageTitle>Asignar Bicicletas a Estaciones</PageTitle>
+
+<h3 class="text-success mb-4">Asignación de Bicicletas</h3>
+
+<div class="row g-3 mb-4">
+    <div class="col-12 col-md-6">
+        <RadzenLabel Text="Estación" />
+        <RadzenDropDown @bind-Value="estacionSeleccionadaId"
+                        Data="@estaciones"
+                        TextProperty="Nombre"
+                        ValueProperty="estacionId"
+                        Style="width: 100%;"
+                        Placeholder="Seleccione una estación"
+                        Change="@OnEstacionSeleccionada" />
+    </div>
+</div>
+
+@if (estacionSeleccionadaId != null)
+{
+    <RadzenPickList AllowMoveAll="true"
+                    AllowMoveAllSourceToTarget="true"
+                    AllowMoveAllTargetToSource="true"
+                    @bind-Source="@bicicletasDisponibles"
+                    @bind-Target="@bicicletasAsignadas"
+                    Style="height: 500px; width: 100%;"
+                    TextProperty="Descripcion">
+        <SourceHeader>
+            Bicicletas disponibles
+        </SourceHeader>
+        <TargetHeader>
+            Bicicletas asignadas
+        </TargetHeader>
+        <Template>
+            @context.codigo - @context.Descripcion
+        </Template>
+    </RadzenPickList>
+
+    <div class="d-grid mt-4">
+        <RadzenButton Text="Guardar Asignación"
+                      Icon="save"
+                      ButtonStyle="ButtonStyle.Primary"
+                      Click="@GuardarAsignaciones"
+                      Disabled="@guardando"
+                      IsBusy="@guardando"
+                      BusyText="Guardando..." />
+    </div>
+}
+
+
+@code {
+
+}

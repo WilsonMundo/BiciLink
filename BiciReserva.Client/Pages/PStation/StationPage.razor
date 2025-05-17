@@ -1,0 +1,19 @@
+﻿@page "/station"
+
+
+@inject NotificationService NotificationService
+@inject NavigationManager NavigationManager
+<RadzenSteps SelectedIndex="@selectChangeStepsItem" SelectedIndexChanged="OnSelectedIndexChanged">
+    <Steps>
+        <RadzenStepsItem Text="Estación">
+          <StationComponent/>
+        </RadzenStepsItem>
+        <RadzenStepsItem Text="Lista">
+            <BiciReserva.Client.Component.CStation.ListStationComponent/>
+        </RadzenStepsItem>
+    </Steps>
+</RadzenSteps>
+
+@code {
+
+}

@@ -20,6 +20,12 @@ using BiciReserva.Middelwares;
 using Microsoft.AspNetCore.Mvc;
 using Shared.DTO;
 using BiciReserva.Components;
+using DataAccess.Repository.RBicicleta;
+using DataAccess.Repository.REstacion;
+using BusinessLogic.Services.SBicicleta;
+using BusinessLogic.Services.SStation;
+using DataAccess.Repository.RMaintenance;
+using BusinessLogic.Services.SMaintenance;
 
 namespace BiciReserva
 {
@@ -45,6 +51,12 @@ namespace BiciReserva
             {
                 var connectionManager = serviceProvider.GetRequiredService<DatabaseConnectionManager>();
                 var connectionString = connectionManager.ValidateConnectionString(CadenaConexion, "UserBiciLink");
+                options.UseSqlServer(connectionString);
+            });
+            services.AddDbContext<SystemDBContext>((serviceProvider, options) =>
+            {
+                var connectionManager = serviceProvider.GetRequiredService<DatabaseConnectionManager>();
+                var connectionString = connectionManager.ValidateConnectionString(CadenaConexion, "BiciLink");
                 options.UseSqlServer(connectionString);
             });
             services.AddIdentity<IdentityUser, IdentityRole>()
@@ -148,6 +160,14 @@ namespace BiciReserva
             services.AddScoped<IUsuarioRepository, UsuarioRepository>();
             services.AddScoped<IUtilsRepository, UtilsRepository>();
             services.AddScoped<IIAuthService, IAuthService>();
+            services.AddScoped<IEstadoBicicletaRepository, EstadoBicicletaRepository>();
+            services.AddScoped<IBicicletaRepository, BicicletaRepository>();
+            services.AddScoped<IEstacionRepository, EstacionRepository>();
+            services.AddScoped<IBicycleService, BicycleService>();
+            services.AddScoped<StateBicycleService>();
+            services.AddScoped<IStationService, StationService>();
+            services.AddScoped<IMaintenanceRepository, MaintenanceRepository>();
+            services.AddScoped<IMaintenanceService,MaintenanceService>();
         }
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {

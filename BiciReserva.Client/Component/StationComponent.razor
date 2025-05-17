@@ -1,0 +1,57 @@
+﻿@inject NotificationService NotificationService
+@inject IRepository Repository
+@inject DialogService DialogService
+
+<h3 class="text-center text-success mb-4">Registrar Nueva Estación</h3>
+
+<div class="row">
+    <div class="col-12 col-md-9 col-lg-8">
+        <RadzenTemplateForm @ref="form" Data="@estacion" TItem="EstacionDTO" Submit="@OnSubmit">
+            <div class="row g-3">
+
+                <div class="col-12">
+                    <RadzenLabel Text="Nombre" Component="Nombre" />
+                    <RadzenTextBox Name="Nombre" @bind-Value="estacion.Nombre" Style="width: 100%;" />
+                    <RadzenRequiredValidator Component="Nombre" Text="Campo requerido" />
+                </div>
+
+                <div class="col-12">
+                    <RadzenLabel Text="Dirección" Component="Direccion" />
+                    <RadzenTextBox Name="Direccion" @bind-Value="estacion.Direccion" Style="width: 100%;" />
+                    <RadzenRequiredValidator Component="Direccion" Text="Campo requerido" />
+                </div>
+
+                <div class="col-12 col-md-6">
+                    <RadzenLabel Text="Latitud" Component="Latitud" />
+                    <RadzenNumeric Name="Latitud" @bind-Value="estacion.Latitud" Style="width: 100%;" />
+                    <RadzenRequiredValidator Component="Latitud" Text="Campo requerido" />
+                </div>
+
+                <div class="col-12 col-md-6">
+                    <RadzenLabel Text="Longitud" Component="Longitud" />
+                    <RadzenNumeric Name="Longitud" @bind-Value="estacion.Longitud" Style="width: 100%;" />
+                    <RadzenRequiredValidator Component="Longitud" Text="Campo requerido" />
+                </div>
+
+                <div class="col-12">
+                    <RadzenCheckBox @bind-Value="estacion.FlagActivo" />
+                    <RadzenLabel Text="¿Estación Activa?" Style="margin-left: 0.5rem;" />
+                </div>
+
+                <div class="col-12 d-grid gap-2 mt-4">
+                    <RadzenButton Text="Registrar Estación"
+                                  ButtonType="ButtonType.Submit"
+                                  ButtonStyle="ButtonStyle.Success"
+                                  IsBusy="@procesando"
+                                  BusyText="Procesando..."
+                                  Style="width: 100%; font-size: 1rem; padding: 0.75rem;" />
+                </div>
+
+            </div>
+        </RadzenTemplateForm>
+    </div>
+</div>
+
+@code {
+
+}

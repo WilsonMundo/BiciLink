@@ -1,0 +1,21 @@
+﻿@page "/bicycle"
+
+@inject NavigationManager Navigation
+@inject NotificationService NotificationService
+@inject IRepository Repository
+
+<PageTitle>Bicicleta</PageTitle>
+
+<RadzenSteps SelectedIndex="@selectChangeStepsItem" SelectedIndexChanged="OnSelectedIndexChanged">
+      <Steps>
+        <RadzenStepsItem Text="Bicicleta">
+            <BicycleComponent/>
+        </RadzenStepsItem>
+        <RadzenStepsItem Text="Lista">
+            <BicycleListComponent/>
+        </RadzenStepsItem>
+          </Steps>
+</RadzenSteps>
+    @code {
+
+    }
