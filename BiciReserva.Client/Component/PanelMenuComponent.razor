@@ -3,13 +3,17 @@
         <RadzenPanelMenu ExpandMode="PanelMenuExpandMode.Single"
                          Style="width: 100%;">
             <RadzenPanelMenuItem Text="Inicio" Icon="home" Path="" />
+            <RadzenPanelMenuItem Text="Mantenimiento" Icon="build">
+                <RadzenPanelMenuItem Text="Mantenimiento" Icon="engineering" Path="maintenance" />
+                <RadzenPanelMenuItem Text="Estado Mantenimiento" Icon="home_repair_service" Path="state-maintenance" />
+            </RadzenPanelMenuItem>
             <RadzenPanelMenuItem Text="Bicicletas" Icon="motorcycle">
                 <RadzenPanelMenuItem Text="Bicicleta" Icon="directions_bike" Path="bicycle" />
                 <RadzenPanelMenuItem Text="Estado Bicicleta" Icon="pedal_bike" Path="state-bicycle" />
             </RadzenPanelMenuItem> 
             <RadzenPanelMenuItem Text="Estaciones" Icon="directions_subway_filled">
                 <RadzenPanelMenuItem Text="Estación" Icon="escalator" Path="station" />
-                <RadzenPanelMenuItem Text="Estado Bicicleta" Icon="pedal_bike" Path="state-bicycle" />
+                <RadzenPanelMenuItem Text="Asignación de Bicicletas" Icon="assignment_add" Path="assign-bicycles" />
             </RadzenPanelMenuItem>
         </RadzenPanelMenu>
     </div>

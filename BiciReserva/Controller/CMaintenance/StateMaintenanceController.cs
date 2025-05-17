@@ -1,49 +1,49 @@
 ﻿using BiciReserva.Services;
-using BusinessLogic.Services.SBicicleta;
+using BusinessLogic.Interface;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Shared.DTO;
 
-namespace BiciReserva.Controller.CBicycle
+namespace BiciReserva.Controller.CMaintenance
 {
     [ApiController]
     [Route("api/v1/[controller]")]
     [ApiConventionType(typeof(DefaultApiConventions))]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-    public class StateBicycleController:ControllerBase
+    public class StateMaintenanceController:ControllerBase
     {
         private readonly ResponseService _response;
-        private readonly StateBicycleService _stateBicycle;
-        public StateBicycleController(ResponseService response , StateBicycleService stateBicycle)
+        private readonly IMaintenanceService _maintenance;
+        public StateMaintenanceController(ResponseService response, IMaintenanceService maintenance)
         {
             this._response = response;
-            this._stateBicycle = stateBicycle;
+            this._maintenance = maintenance;
+
         }
         [HttpGet]
         public async Task<IActionResult> GetStateBicycle()
         {
-            ResultAPI<List<GStateGeneralDTO>> result = await _stateBicycle.GetState();
+            ResultAPI<List<GStateGeneralDTO>> result = await _maintenance.GetState();
             return _response.CreateResponse(result, result.code);
         }
         [HttpPost]
-        public async Task<IActionResult> PostStateBicycle([FromBody] GEstadoDTO gState )
+        public async Task<IActionResult> PostStateBicycle([FromBody] GEstadoDTO gState)
         {
-            ResultAPI<GStateGeneralDTO> result = await _stateBicycle.PostState(gState);
+            ResultAPI<GStateGeneralDTO> result = await _maintenance.PostState(gState);
             return _response.CreateResponse(result, result.code);
         }
         [HttpPut]
         public async Task<IActionResult> PutStateBicycle([FromBody] GStateGeneralDTO gState)
         {
-            ResultAPI<GStateGeneralDTO> result = await _stateBicycle.PutState(gState);
+            ResultAPI<GStateGeneralDTO> result = await _maintenance.PutState(gState);
             return _response.CreateResponse(result, result.code);
         }
 
         [HttpDelete("{id:int}")]
         public async Task<IActionResult> DeleteStateBicycle(short id)
         {
-            ResultAPI<object> result = await _stateBicycle.DeleteState(id);
+            ResultAPI<object> result = await _maintenance.DeleteState(id);
             return _response.CreateResponse(result, result.code);
         }
 

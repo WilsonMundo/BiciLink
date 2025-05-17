@@ -13,6 +13,7 @@ namespace DataAccess.Repository.Utils
     public class UtilsRepository: IUtilsRepository
     {
         private readonly RegisterDBContext _dbContext;
+        
         public UtilsRepository(RegisterDBContext context)
         {
             this._dbContext = context;

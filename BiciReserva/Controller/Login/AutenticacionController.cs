@@ -57,7 +57,7 @@ namespace BiciReserva.Controller.Login
             try
             {
                 ResultAPI<UserToken?> userToken = await _iIAuthService.ValidateUser(userInfo);
-                if(userToken != null && userToken.result != null)
+                if(userToken.result != null)
                 {
                     var cookieOptions = new CookieOptions
                     {
@@ -73,7 +73,7 @@ namespace BiciReserva.Controller.Login
                 }
                 else
                 {
-                    return StatusCode(StatusCodes.Status500InternalServerError, "Error interno comunicar a soporte");
+                    return _response.CreateResponse(userToken, userToken.code);
                 }
 
             }
@@ -91,13 +91,13 @@ namespace BiciReserva.Controller.Login
             try
             {
                 ResultAPI<UserToken?> userToken = await _iIAuthService.ValidateUser(userInfo);
-                if (userToken != null && userToken.result != null)
+                if ( userToken.result != null)
                 {
                     return _response.CreateResponse(userToken, userToken.code);
                 }
                 else
                 {
-                    return StatusCode(StatusCodes.Status500InternalServerError, "Error interno comunicar a soporte");
+                    return _response.CreateResponse(userToken, userToken.code);
                 }
 
             }

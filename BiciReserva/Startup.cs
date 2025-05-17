@@ -24,6 +24,8 @@ using DataAccess.Repository.RBicicleta;
 using DataAccess.Repository.REstacion;
 using BusinessLogic.Services.SBicicleta;
 using BusinessLogic.Services.SStation;
+using DataAccess.Repository.RMaintenance;
+using BusinessLogic.Services.SMaintenance;
 
 namespace BiciReserva
 {
@@ -164,6 +166,8 @@ namespace BiciReserva
             services.AddScoped<IBicycleService, BicycleService>();
             services.AddScoped<StateBicycleService>();
             services.AddScoped<IStationService, StationService>();
+            services.AddScoped<IMaintenanceRepository, MaintenanceRepository>();
+            services.AddScoped<IMaintenanceService,MaintenanceService>();
         }
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
