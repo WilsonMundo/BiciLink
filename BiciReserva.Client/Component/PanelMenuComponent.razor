@@ -1,25 +1,52 @@
-﻿<div class="sidebar-wrapper rz-background-color-success-lighter">
+﻿@using System.Security.Claims
+@inject AuthenticationStateProvider AuthStateProvider
+<div class="sidebar-wrapper rz-background-color-success-lighter">
     <div class="sidebar-content @(isMenuOpen ? "menu-open" : "menu-closed")">
         <RadzenPanelMenu ExpandMode="PanelMenuExpandMode.Single"
                          Style="width: 100%;">
             <RadzenPanelMenuItem Text="Inicio" Icon="home" Path="" />
-            <RadzenPanelMenuItem Text="Mantenimiento" Icon="build">
-                <RadzenPanelMenuItem Text="Mantenimiento" Icon="engineering" Path="maintenance" />
-                <RadzenPanelMenuItem Text="Estado Mantenimiento" Icon="home_repair_service" Path="state-maintenance" />
-            </RadzenPanelMenuItem>
-            <RadzenPanelMenuItem Text="Bicicletas" Icon="motorcycle">
-                <RadzenPanelMenuItem Text="Bicicleta" Icon="directions_bike" Path="bicycle" />
-                <RadzenPanelMenuItem Text="Estado Bicicleta" Icon="pedal_bike" Path="state-bicycle" />
-            </RadzenPanelMenuItem> 
-            <RadzenPanelMenuItem Text="Estaciones" Icon="directions_subway_filled">
-                <RadzenPanelMenuItem Text="Estación" Icon="escalator" Path="station" />
-                <RadzenPanelMenuItem Text="Asignación de Bicicletas" Icon="assignment_add" Path="assign-bicycles" />
-            </RadzenPanelMenuItem>
+            <AuthorizeView Roles="Admin,User">
+                <RadzenPanelMenuItem Text="Reserva" Icon="confirmation_number">
+                    <RadzenPanelMenuItem Text="Reserva" Icon="event" Path="reservation" />
+                    <RadzenPanelMenuItem Text="Estado Reserva"
+                                         Icon="insert_invitation"
+                                         Path="state-reservation"
+                                         Visible="@(userRol == "Admin")" />
+                </RadzenPanelMenuItem>
+            </AuthorizeView>
+            <AuthorizeView Roles="Admin,Tecnico">
+                <RadzenPanelMenuItem Text="Mantenimiento" Icon="build">
+                    <RadzenPanelMenuItem Text="Mantenimiento" Icon="engineering" Path="maintenance" />
+                    <RadzenPanelMenuItem Text="Estado Mantenimiento" Icon="home_repair_service" Path="state-maintenance" />
+                </RadzenPanelMenuItem>
+            </AuthorizeView>
+            <AuthorizeView Roles="Admin">
+                <RadzenPanelMenuItem Text="Bicicletas" Icon="motorcycle">
+                    <RadzenPanelMenuItem Text="Bicicleta" Icon="directions_bike" Path="bicycle" />
+                    <RadzenPanelMenuItem Text="Estado Bicicleta" Icon="pedal_bike" Path="state-bicycle" />
+                </RadzenPanelMenuItem>
+                <RadzenPanelMenuItem Text="Estaciones" Icon="directions_subway_filled">
+                    <RadzenPanelMenuItem Text="Estación" Icon="escalator" Path="station" />
+                    <RadzenPanelMenuItem Text="Asignación de Bicicletas" Icon="assignment_add" Path="assign-bicycles" />
+                </RadzenPanelMenuItem>
+            </AuthorizeView>
+            
         </RadzenPanelMenu>
     </div>
 </div>
 
 
 @code {
-   
+    string? userRol;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        if (user.Identity?.IsAuthenticated == true)
+        {
+            userRol = user.FindFirst(c => c.Type == ClaimTypes.Role)?.Value;
+        }
+    }
 }

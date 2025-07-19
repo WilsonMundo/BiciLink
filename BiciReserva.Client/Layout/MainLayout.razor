@@ -1,5 +1,6 @@
 ﻿@inherits LayoutComponentBase
 <RadzenComponents @rendermode="@RenderMode.InteractiveWebAssembly" />
+@inject IJSRuntime JS
 
 <AuthorizeView>
     <Authorized>
@@ -29,5 +30,12 @@
     private void ToggleMenu()
     {
         isMenuOpen = !isMenuOpen;
+    }
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JS.InvokeVoidAsync("removeLoader");
+        }
     }
 }

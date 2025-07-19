@@ -10,6 +10,7 @@ namespace Shared.Auth.DTO
     public class UserInfo
     {
         [Required(ErrorMessage = "Este campo es requerido")]
+        [EmailAddress(ErrorMessage = "El formato del correo no es válido.")]
         public string Login { get; set; } = null!;
         [Required(ErrorMessage = "Este campo es requerido")]
         public string Password { get; set; } = null!;  

@@ -14,8 +14,8 @@ namespace BiciReserva.Controller.CMaintenance
     public class StateMaintenanceController:ControllerBase
     {
         private readonly ResponseService _response;
-        private readonly IMaintenanceService _maintenance;
-        public StateMaintenanceController(ResponseService response, IMaintenanceService maintenance)
+        private readonly IStateMaintenanceService _maintenance;
+        public StateMaintenanceController(ResponseService response, IStateMaintenanceService maintenance)
         {
             this._response = response;
             this._maintenance = maintenance;

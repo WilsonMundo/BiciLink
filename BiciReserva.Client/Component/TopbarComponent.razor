@@ -1,10 +1,19 @@
-﻿@inject NavigationManager NavigationManager
+﻿@using BiciReserva.Client.Service
+@inject NavigationManager NavigationManager
+@inject UserState UserState
 <header class="topbar">
     <div class="topbar-left">
         <RadzenButton Icon="menu" Click="@ToggleMenu" ButtonStyle="ButtonStyle.Light" />
     </div>
 
-    <div class="topbar-right">        
+    <div class="topbar-right">
+         
+    </div>
+    <div class="topbar-right">   
+        <RadzenButton Click="@(() => NavigationManager.NavigateTo("/salir"))"
+                      Text="@UserState.UserName" Icon="logout"
+                      ButtonStyle="ButtonStyle.Success"
+                      Variant="Variant.Flat" />
         <RadzenButton Click="@(() => NavigationManager.NavigateTo("/salir"))"
                       Text="Sign out" Icon="logout"
                       ButtonStyle="ButtonStyle.Success"

@@ -9,106 +9,113 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BusinessLogic.Services.SBicicleta
+namespace BusinessLogic.Services.SReserva
 {
-    public class StateBicycleService 
+    public  class StateReservaService: IStateReservaService
     {
-        private readonly IEstadoBicicletaRepository _stateBicycle;
-        public StateBicycleService(IEstadoBicicletaRepository state)
+        private readonly IEstadoReservaRepository _estadoReservaRepository;
+
+        public StateReservaService(IEstadoReservaRepository estadoReservaRepository)
         {
-            this._stateBicycle = state;
+            this._estadoReservaRepository = estadoReservaRepository;
         }
-        public async Task<ResultAPI<GStateGeneralDTO>>  PostState(GEstadoDTO estadoDTO)
+        public async Task<ResultAPI<GStateGeneralDTO>> PostState(GEstadoDTO estadoDTO)
         {
             ResultAPI<GStateGeneralDTO> result = new ResultAPI<GStateGeneralDTO>(true);
             try
             {
-                EstadoBicicletum estadoBicicletum = new EstadoBicicletum()
+                var estadoReserva = new EstadoReserva
                 {
-                    Descripcion = estadoDTO.Descripcion,
+                    Descripcion = estadoDTO.Descripcion
                 };
 
-                var state = await _stateBicycle.Addasync(estadoBicicletum);
+                var saved = await _estadoReservaRepository.AddAsync(estadoReserva);
 
-                result.result = new GStateGeneralDTO()
+                result.result = new GStateGeneralDTO
                 {
-                    descripcion = estadoDTO.Descripcion,
-                    idEstado = state.EstadoBicicletaId
+                    descripcion = saved.Descripcion,
+                    idEstado = saved.EstadoReservaId
                 };
+
                 result.Ok(StatusHttpResponse.OK);
             }
             catch (Exception ex)
             {
-                result.message = "Se producto un error al crear Estado Bicicleta notificar a soporte";
+                result.message = "Se produjo un error al crear Estado Reserva. Notificar a soporte.";
                 result.error = true;
                 result.code = StatusHttpResponse.InternalServerError;
                 Log.Error(ex.Message);
             }
+
             return result;
         }
+
         public async Task<ResultAPI<GStateGeneralDTO>> PutState(GStateGeneralDTO gStateGeneral)
         {
             ResultAPI<GStateGeneralDTO> result = new ResultAPI<GStateGeneralDTO>(true);
             try
             {
-                var state = await  _stateBicycle.GetEstadoBicicletum(gStateGeneral.idEstado);
-                if(state != null)
+                var estado = await _estadoReservaRepository.GetEstadoReservaByIdAsync(gStateGeneral.idEstado);
+                if (estado != null)
                 {
-                    state.Descripcion = gStateGeneral.descripcion;
+                    estado.Descripcion = gStateGeneral.descripcion;
 
-                    bool procesado =  await _stateBicycle.SaveAsync();
-                    if(procesado)
+                    bool procesado = await _estadoReservaRepository.SaveAsync();
+                    if (procesado)
                     {
-                        result.OkData(StatusHttpResponse.OK,new GStateGeneralDTO()
+                        result.OkData(StatusHttpResponse.OK, new GStateGeneralDTO
                         {
-                            descripcion=state.Descripcion,
-                            idEstado = state.EstadoBicicletaId,
+                            descripcion = estado.Descripcion,
+                            idEstado = estado.EstadoReservaId
                         });
-
                     }
                     else
                     {
                         result.error = true;
                         result.code = StatusHttpResponse.BadRequest;
-                        result.message = "Error estado no existe";
+                        result.message = "Error: estado no pudo ser actualizado.";
                     }
                 }
                 else
                 {
                     result.error = true;
                     result.code = StatusHttpResponse.BadRequest;
-                    result.message = "Error estado no existe";
+                    result.message = "Error: estado no existe.";
                 }
             }
             catch (Exception ex)
             {
-                result.message = "Se producto un error al Editar Estado Bicicleta notificar a soporte";
+                result.message = "Se produjo un error al editar Estado Reserva. Notificar a soporte.";
                 result.error = true;
                 result.code = StatusHttpResponse.InternalServerError;
-                Log.Error(ex.Message, "Editar Estado Bicicleta");
+                Log.Error(ex.Message, "Editar Estado Reserva");
             }
+
             return result;
         }
+
         public async Task<ResultAPI<List<GStateGeneralDTO>>> GetState()
         {
             ResultAPI<List<GStateGeneralDTO>> result = new ResultAPI<List<GStateGeneralDTO>>(true);
             try
             {
-                var data = await _stateBicycle.GetEstadoBicicletaAsync();
-                result.result = data.Select(x =>  new GStateGeneralDTO()
+                var data = await _estadoReservaRepository.GetEstadoReservasAsync();
+                result.result = data.Select(x => new GStateGeneralDTO
                 {
                     descripcion = x.Descripcion,
-                    idEstado = x.EstadoBicicletaId,
+                    idEstado = x.EstadoReservaId
                 }).ToList();
-                result.Ok(StatusHttpResponse.OK);
 
-            }catch(Exception ex)
+                result.Ok(StatusHttpResponse.OK);
+            }
+            catch (Exception ex)
             {
-                result.message = "Se producto un error al Listar Estado Bicicleta notificar a soporte";
+                result.message = "Se produjo un error al listar Estado Reserva. Notificar a soporte.";
                 result.error = true;
                 result.code = StatusHttpResponse.InternalServerError;
                 Log.Error(ex.Message);
             }
+
             return result;
         }
 
@@ -117,8 +124,8 @@ namespace BusinessLogic.Services.SBicicleta
             ResultAPI<object> result = new ResultAPI<object>(true);
             try
             {
-                bool aplicado = await _stateBicycle.DeleteAsync(id);
-                if(aplicado)
+                bool eliminado = await _estadoReservaRepository.DeleteAsync(id);
+                if (eliminado)
                 {
                     result.Ok(StatusHttpResponse.OK);
                 }
@@ -126,17 +133,19 @@ namespace BusinessLogic.Services.SBicicleta
                 {
                     result.error = true;
                     result.code = StatusHttpResponse.BadRequest;
-                    result.message = "Error estado no existe";
+                    result.message = "Error: estado no existe o ya fue eliminado.";
                 }
-
-            }catch(Exception ex)
+            }
+            catch (Exception ex)
             {
-                result.message = "Se producto un error al eliminar Estado Bicicleta notificar a soporte";
+                result.message = "Se produjo un error al eliminar Estado Reserva. Notificar a soporte.";
                 result.error = true;
                 result.code = StatusHttpResponse.InternalServerError;
                 Log.Error(ex.Message);
             }
+
             return result;
         }
+
     }
 }

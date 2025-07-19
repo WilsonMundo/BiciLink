@@ -37,7 +37,12 @@
 
                 <div class="form-group">
                     <a href="#" class="forgot-link">Olvidé Contraseña?</a>
-                    <RadzenButton ButtonStyle="ButtonStyle.Success" ButtonType="ButtonType.Submit" Text="Iniciar sesión" Style="margin-top: 0.5rem;" />
+                    <RadzenButton ButtonStyle="ButtonStyle.Success"
+                                  ButtonType="ButtonType.Submit" 
+                                  Text="Iniciar sesión"
+                                  Style="margin-top: 0.5rem;"
+                                  BusyText="Procesando"
+                                  IsBusy="@Enviar" />
                 </div>
 
             </RadzenTemplateForm>

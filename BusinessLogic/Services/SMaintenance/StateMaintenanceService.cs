@@ -9,37 +9,41 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BusinessLogic.Services.SBicicleta
+namespace BusinessLogic.Services.SMaintenance
 {
-    public class StateBicycleService 
+    public class StateMaintenanceService : IStateMaintenanceService
     {
-        private readonly IEstadoBicicletaRepository _stateBicycle;
-        public StateBicycleService(IEstadoBicicletaRepository state)
+        private readonly IStateMaintenanceRepository _maintenance;
+
+        public StateMaintenanceService(IStateMaintenanceRepository maintenance)
         {
-            this._stateBicycle = state;
+            this._maintenance = maintenance;
+           
         }
-        public async Task<ResultAPI<GStateGeneralDTO>>  PostState(GEstadoDTO estadoDTO)
+        public async Task<ResultAPI<GStateGeneralDTO>> PostState(GEstadoDTO estadoDTO)
         {
             ResultAPI<GStateGeneralDTO> result = new ResultAPI<GStateGeneralDTO>(true);
             try
             {
-                EstadoBicicletum estadoBicicletum = new EstadoBicicletum()
+                short consecutivo = await _maintenance.MaxIdAsync();
+                EstadoMantenimiento estadoBicicletum = new EstadoMantenimiento()
                 {
                     Descripcion = estadoDTO.Descripcion,
+                    EstadoMantenimientoId = consecutivo,
                 };
 
-                var state = await _stateBicycle.Addasync(estadoBicicletum);
+                var state = await _maintenance.Addasync(estadoBicicletum);
 
                 result.result = new GStateGeneralDTO()
                 {
                     descripcion = estadoDTO.Descripcion,
-                    idEstado = state.EstadoBicicletaId
+                    idEstado = state.EstadoMantenimientoId,
                 };
                 result.Ok(StatusHttpResponse.OK);
             }
             catch (Exception ex)
             {
-                result.message = "Se producto un error al crear Estado Bicicleta notificar a soporte";
+                result.message = "Se producto un error al crear Estado de mantenimiento notificar a soporte";
                 result.error = true;
                 result.code = StatusHttpResponse.InternalServerError;
                 Log.Error(ex.Message);
@@ -51,18 +55,18 @@ namespace BusinessLogic.Services.SBicicleta
             ResultAPI<GStateGeneralDTO> result = new ResultAPI<GStateGeneralDTO>(true);
             try
             {
-                var state = await  _stateBicycle.GetEstadoBicicletum(gStateGeneral.idEstado);
-                if(state != null)
+                var state = await _maintenance.GetEstadoMantenimiento(gStateGeneral.idEstado);
+                if (state != null)
                 {
                     state.Descripcion = gStateGeneral.descripcion;
 
-                    bool procesado =  await _stateBicycle.SaveAsync();
-                    if(procesado)
+                    bool procesado = await _maintenance.SaveAsync();
+                    if (procesado)
                     {
-                        result.OkData(StatusHttpResponse.OK,new GStateGeneralDTO()
+                        result.OkData(StatusHttpResponse.OK, new GStateGeneralDTO()
                         {
-                            descripcion=state.Descripcion,
-                            idEstado = state.EstadoBicicletaId,
+                            descripcion = state.Descripcion,
+                            idEstado = state.EstadoMantenimientoId,
                         });
 
                     }
@@ -82,7 +86,7 @@ namespace BusinessLogic.Services.SBicicleta
             }
             catch (Exception ex)
             {
-                result.message = "Se producto un error al Editar Estado Bicicleta notificar a soporte";
+                result.message = "Se producto un error al Editar Estado de mantenimiento notificar a soporte";
                 result.error = true;
                 result.code = StatusHttpResponse.InternalServerError;
                 Log.Error(ex.Message, "Editar Estado Bicicleta");
@@ -94,17 +98,18 @@ namespace BusinessLogic.Services.SBicicleta
             ResultAPI<List<GStateGeneralDTO>> result = new ResultAPI<List<GStateGeneralDTO>>(true);
             try
             {
-                var data = await _stateBicycle.GetEstadoBicicletaAsync();
-                result.result = data.Select(x =>  new GStateGeneralDTO()
+                var data = await _maintenance.GetEstadoMantenimientoAsync();
+                result.result = data.Select(x => new GStateGeneralDTO()
                 {
                     descripcion = x.Descripcion,
-                    idEstado = x.EstadoBicicletaId,
+                    idEstado = x.EstadoMantenimientoId,
                 }).ToList();
                 result.Ok(StatusHttpResponse.OK);
 
-            }catch(Exception ex)
+            }
+            catch (Exception ex)
             {
-                result.message = "Se producto un error al Listar Estado Bicicleta notificar a soporte";
+                result.message = "Se producto un error al Listar Estado de mantenimiento notificar a soporte";
                 result.error = true;
                 result.code = StatusHttpResponse.InternalServerError;
                 Log.Error(ex.Message);
@@ -117,8 +122,8 @@ namespace BusinessLogic.Services.SBicicleta
             ResultAPI<object> result = new ResultAPI<object>(true);
             try
             {
-                bool aplicado = await _stateBicycle.DeleteAsync(id);
-                if(aplicado)
+                bool aplicado = await _maintenance.DeleteAsync(id);
+                if (aplicado)
                 {
                     result.Ok(StatusHttpResponse.OK);
                 }
@@ -129,9 +134,10 @@ namespace BusinessLogic.Services.SBicicleta
                     result.message = "Error estado no existe";
                 }
 
-            }catch(Exception ex)
+            }
+            catch (Exception ex)
             {
-                result.message = "Se producto un error al eliminar Estado Bicicleta notificar a soporte";
+                result.message = "Se producto un error al eliminar Estado de mantenimiento notificar a soporte";
                 result.error = true;
                 result.code = StatusHttpResponse.InternalServerError;
                 Log.Error(ex.Message);

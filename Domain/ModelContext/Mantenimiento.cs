@@ -25,6 +25,7 @@ namespace Domain.ModelContext
         public short EstadoMantenimientoId { get; set; }
 
         public virtual Bicicletum Bicicleta { get; set; } = null!;
+        public virtual EstadoMantenimiento EstadoMantenimiento { get; set; } = null!;
     }
 
 }

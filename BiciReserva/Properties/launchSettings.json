@@ -15,7 +15,7 @@
       "launchBrowser": true,
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
-        "SQLConnection": "Data Source=LOCALHOST,42280;Initial Catalog={XXXXX};Persist Security Info=True;User ID=sa; Password=smart2010bit;Integrated Security=True; Column Encryption Setting=Enabled;Trust Server Certificate=True",
+        "SQLConnection": "Data Source=LOCALHOST,42280;Initial Catalog={XXXXX};Persist Security Info=True;User ID=sa; Password=smart2010bit;Integrated Security=True;Trust Server Certificate=True",
         "llavejwt": "4234G2JH3G423V42B3V4N23V4J2H3H4JK2H5KJ5H63V45B3C45VB3V45B3MN4BMN4M2639BSTOQ"
       },
       "dotnetRunMessages": true,

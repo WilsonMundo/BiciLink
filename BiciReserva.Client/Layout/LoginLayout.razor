@@ -1,9 +1,17 @@
 ﻿@inherits LayoutComponentBase
 @inject NotificationService NotificationService;
+
+@inject IJSRuntime JS
 <RadzenComponents @rendermode="@RenderMode.InteractiveWebAssembly" />
 
 @Body
 
 @code {
-
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JS.InvokeVoidAsync("removeLoader");
+        }
+    }
 }

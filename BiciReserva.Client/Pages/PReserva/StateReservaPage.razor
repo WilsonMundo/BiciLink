@@ -1,0 +1,66 @@
+﻿@page "/state-reservation"
+
+@inject NotificationService NotificationService
+@inject IRepository Repository
+@inject DialogService DialogService
+
+<PageTitle>Estado</PageTitle>
+
+@if (estados == null)
+{
+    <CargandoComponent />
+}
+<div>
+    <h3>Estados Reserva</h3>
+
+    <RadzenDataGrid TItem="GStateGeneralDTO"
+                    Data="@estados"
+                    @ref="estadoGrid"
+                    EditMode="@editMode"
+                    RowUpdate="@OnUpdateRow"
+                    RowCreate="@OnCreateRow"
+                    RowRender="@OnRowRender"
+                    AllowSorting="true"
+                    AllowPaging="true"
+                    PageSize="10"
+                    AllowAlternatingRows="false"
+                    IsLoading=@isLoading
+                    Sort="@ShowLoading"
+                    Page="@ShowLoading"
+                    Group="@ShowLoading"
+                    Filter="@ShowLoading">
+
+        <Columns>
+            <RadzenDataGridColumn TItem="GStateGeneralDTO" Property="idEstado" Title="ID" Width="60px" />
+            <RadzenDataGridColumn TItem="GStateGeneralDTO" Property="descripcion" Title="Descripción" Width="150px">
+                <EditTemplate Context="item">
+                    <RadzenTextBox @bind-Value="item.descripcion" Style="width: 100%" Name="descripcion" />
+                    <RadzenRequiredValidator Component="descripcion" Text="Campo requerido" Popup="true" />
+                </EditTemplate>
+            </RadzenDataGridColumn>
+
+            <RadzenDataGridColumn TItem="GStateGeneralDTO" Context="item" TextAlign="TextAlign.Right" Width="120px">
+                <Template Context="item">
+                    <RadzenButton Icon="add_circle" Size="ButtonSize.Small" ButtonStyle="ButtonStyle.Success" Click="() => InsertAfterRow(item)" Disabled="@(editMode == DataGridEditMode.Single && estadosToInsert.Count > 0)" />
+                    <RadzenButton Icon="edit" Size="ButtonSize.Small" ButtonStyle="ButtonStyle.Light" Click="() => EditRow(item)" class="rz-ml-1" />
+                    <RadzenButton Icon="delete" Size="ButtonSize.Small" ButtonStyle="ButtonStyle.Danger" Click="() => DeleteRow(item)" class="rz-ml-1" />
+                </Template>
+                <EditTemplate Context="item">
+                    <RadzenButton Icon="check" Size="ButtonSize.Small" ButtonStyle="ButtonStyle.Success" Click="() => SaveRow(item)" />
+                    <RadzenButton Icon="close" Size="ButtonSize.Small" ButtonStyle="ButtonStyle.Light" Click="() => CancelEdit(item)" class="rz-ml-2" />
+                </EditTemplate>
+            </RadzenDataGridColumn>
+        </Columns>
+    </RadzenDataGrid>
+
+    <RadzenButton Icon="add_circle"
+                  Text="Nuevo Estado"
+                  ButtonStyle="ButtonStyle.Success"
+                  Style="margin-top: 1rem"
+                  Click="@InsertRow"
+                  Disabled="@(editMode == DataGridEditMode.Single && estadosToInsert.Count > 0)"
+                  IsBusy="@insert"
+                  BusyText="Procesando" />
+</div>
+@code {
+}

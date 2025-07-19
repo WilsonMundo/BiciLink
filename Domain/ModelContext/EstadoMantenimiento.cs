@@ -11,5 +11,6 @@ namespace Domain.ModelContext
         public short EstadoMantenimientoId { get; set; }
 
         public string Descripcion { get; set; } = null!;
+        public virtual ICollection<Mantenimiento> Mantenimiento { get; set; } = new List<Mantenimiento>();
     }
 }

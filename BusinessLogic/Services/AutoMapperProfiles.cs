@@ -58,6 +58,8 @@ namespace BusinessLogic.Services
                 opt => opt.MapFrom(src => src.Imagen1)
                 );
             CreateMap<EstacionDTO, Estacion>();
+            CreateMap<MantenimientoDTO,Mantenimiento>();
+            CreateMap<ReservaDTO,Reserva>();
         }
         
     }
