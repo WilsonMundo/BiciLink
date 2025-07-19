@@ -95,11 +95,13 @@ namespace BusinessLogic.Services.User
                 }
                 
                 var dbUsuario = _mapper.Map<Usuario>(user);
+                if (string.IsNullOrEmpty(dbUsuario.Direccion))
+                    dbUsuario.Direccion = "ciudad";
                 //long idUser = _bUtils.getSequence("Usuario");
                 string password = HashPassword(user.Password, dbUsuario);
                 dbUsuario.Password = password;
                 dbUsuario.FlagActivo = true;
-                dbUsuario.RolId = 1;
+                dbUsuario.RolId = 2;
                 await _IUsuario.AddAsync(dbUsuario);
                 result.Ok(StatusHttpResponse.OK);
 

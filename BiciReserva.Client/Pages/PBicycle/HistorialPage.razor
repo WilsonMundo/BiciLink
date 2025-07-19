@@ -1,0 +1,62 @@
+﻿@page "/historial"
+
+
+@inject NotificationService NotificationService
+@inject IRepository Repository
+@inject DialogService DialogService
+
+<h3 class="mb-4 text-center">Historial de Reservas</h3>
+
+@if (!string.IsNullOrEmpty(mensajeError))
+{
+    <RadzenAlert Severity="AlertSeverity.Error" Style="margin-bottom: 20px;">
+        @mensajeError
+    </RadzenAlert>
+}
+else if (reservasFiltradas != null)
+{
+    <RadzenDataGrid Data="@reservasFiltradas" TItem="ReservaDTO" ShowPagingSummary="true" PageSize="10" AllowPaging="true" AllowSorting="true">
+        <Columns>
+            <RadzenDataGridColumn TItem="ReservaDTO" Property="ReservaId" Title="ID" />
+
+            <!-- Bicicleta: mostrar descripción -->
+            <RadzenDataGridColumn TItem="ReservaDTO" Title="Bicicleta">
+                <Template Context="reserva">
+                    @bicycles?.FirstOrDefault(b => b.bicycleId == reserva.BicicletaId)?.Descripcion
+                </Template>
+            </RadzenDataGridColumn>
+
+            <!-- Estación Origen -->
+            <RadzenDataGridColumn TItem="ReservaDTO" Title="Estación Origen">
+                <Template Context="reserva">
+                    @estaciones?.FirstOrDefault(e => e.estacionId == reserva.EstacionOrigenId)?.Nombre
+                </Template>
+            </RadzenDataGridColumn>
+
+            <!-- Estación Destino -->
+            <RadzenDataGridColumn TItem="ReservaDTO" Title="Estación Destino">
+                <Template Context="reserva">
+                    @estaciones?.FirstOrDefault(e => e.estacionId == reserva.EstacionDestinoId)?.Nombre
+                </Template>
+            </RadzenDataGridColumn>
+
+            <!-- Estado -->
+            <RadzenDataGridColumn TItem="ReservaDTO" Title="Estado">
+                <Template Context="reserva">
+                    @estados?.FirstOrDefault(e => e.idEstado == reserva.EstadoReservaId)?.descripcion
+                </Template>
+            </RadzenDataGridColumn>
+
+            <RadzenDataGridColumn TItem="ReservaDTO" Property="FechaReserva" Title="Fecha" FormatString="{0:dd/MM/yyyy HH:mm}" />
+
+            <RadzenDataGridColumn TItem="ReservaDTO" Property="CodigoDesbloqueo" Title="Código" />
+        </Columns>
+    </RadzenDataGrid>
+}
+else
+{
+    <RadzenProgressBar Mode="ProgressBarMode.Indeterminate" />
+}
+@code {
+
+}

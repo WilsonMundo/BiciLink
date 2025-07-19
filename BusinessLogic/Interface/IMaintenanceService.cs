@@ -9,10 +9,10 @@ namespace BusinessLogic.Interface
 {
     public interface IMaintenanceService
     {
-        Task<ResultAPI<GStateGeneralDTO>> PostState(GEstadoDTO estadoDTO);
-        Task<ResultAPI<GStateGeneralDTO>> PutState(GStateGeneralDTO gStateGeneral);
-        Task<ResultAPI<List<GStateGeneralDTO>>> GetState();
-        Task<ResultAPI<object>> DeleteState(short id);
-
+        Task<ResultAPI<MantenimientoDTO>> PostMaintenance(MantenimientoDTO mantenimientoDTO, long idUsuario);
+        Task<ResultAPI<List<MantenimientoDTO>>> GetMaintenanceList();
+        Task<ResultAPI<MantenimientoDTO>> GetMaintenanceById(long mantenimientoId);
+        Task<ResultAPI<MantenimientoDTO>> PutMaintenance(MantenimientoDTO mantenimientoDTO);
+        Task<ResultAPI<bool>> DeleteMaintenance(long mantenimientoId);
     }
 }

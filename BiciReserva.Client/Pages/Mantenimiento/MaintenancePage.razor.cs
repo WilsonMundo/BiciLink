@@ -9,6 +9,8 @@ namespace BiciReserva.Client.Pages.Mantenimiento
         MantenimientoDTO mantenimiento = new();
         IEnumerable<GStateGeneralDTO> estados;
         RadzenTemplateForm<MantenimientoDTO> form;
+        IEnumerable<BicycleDTO> bicycles;
+        bool flagBicicletas = false;
         bool insert = false;
 
         void ResetForm()
@@ -21,13 +23,9 @@ namespace BiciReserva.Client.Pages.Mantenimiento
         {
             insert = true;
 
-            // Llamada a la API
-            // var httpResponse = await Repository.Post<MantenimientoDTO>("api/v1/Mantenimiento", mantenimiento);
-
-            // Simular éxito
-            bool success = true;
-
-            if (!success)
+            insert = true;
+            var httpResponse = await Repository.Post<MantenimientoDTO>("api/v1/Maintenance", mantenimiento);
+            if (httpResponse.Error)
             {
                 ShowNotification(new NotificationMessage
                 {
@@ -50,6 +48,44 @@ namespace BiciReserva.Client.Pages.Mantenimiento
             }
 
             insert = false;
+        }
+        async Task GetBicycles()
+        {
+            
+            try
+            {
+                var response = await Repository.Get<List<BicycleDTO>>("api/v1/Bicycle");
+
+                if (response.Error)
+                {
+                    var body = await response.GetBody();
+                    ShowNotification(new NotificationMessage
+                    {
+                        Severity = NotificationSeverity.Error,
+                        Summary = "Error",
+                        Detail = body,
+                        Duration = 5000
+                    });
+                }
+                else
+                {
+                    bicycles = response.Response ?? new List<BicycleDTO>();
+                }
+            }catch(Exception ex)
+            {
+                ShowNotification(new NotificationMessage
+                {
+                    Severity = NotificationSeverity.Error,
+                    Summary = "Error",
+                    Detail = ex.Message,
+                    Duration = 5000
+                });
+            }
+            finally
+            {
+                flagBicicletas = true;
+            }
+            
         }
 
         void ShowNotification(NotificationMessage message)
@@ -84,6 +120,7 @@ namespace BiciReserva.Client.Pages.Mantenimiento
         {
             await base.OnInitializedAsync();
             await GetStates();
+            await GetBicycles();
         }
     }
 }

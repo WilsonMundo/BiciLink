@@ -4,56 +4,73 @@
 @inject IRepository Repository
 @inject DialogService DialogService
 
-<RadzenCard Class="p-4 mt-4">
-    <h3 class="text-center text-success mb-4">Registrar Nuevo Mantenimiento</h3>
-    <div class="row">
-        <div class="col-12 col-lg-8">
-            <RadzenTemplateForm @ref="form" Data="@mantenimiento" TItem="MantenimientoDTO" Submit="@OnSubmit">
-                <div class="row g-3">                    
-                    <div class="col-12">
-                        <RadzenLabel Text="Descripción" Component="Descripcion" />
-                        <RadzenTextBox Name="Descripcion" @bind-Value="mantenimiento.Descripcion" Style="width: 100%;" />
-                        <RadzenRequiredValidator Component="Descripcion" Text="Campo requerido" />
-                    </div>
+@if (flagBicicletas)
+{
+    <RadzenCard Class="p-4 mt-4">
+        <h3 class="text-center text-success mb-4">Registrar Nuevo Mantenimiento</h3>
+        <div class="row">
+            <div class="col-12 col-lg-8">
+                <RadzenTemplateForm @ref="form" Data="@mantenimiento" TItem="MantenimientoDTO" Submit="@OnSubmit">
+                    <div class="row g-3">
+                        <div class="col-12 ">
+                            <RadzenLabel Text="Bicicleta" Component="BicicletaId" />
+                            <RadzenDropDown @bind-Value=@mantenimiento.BicicletaId
+                                            Data=@bicycles
+                                            TextProperty="descripcion"
+                                            ValueProperty="bicycleId"
+                                            Style="width: 100%;"
+                                            Name="BicicletaId" />
+                            <RadzenRequiredValidator Component="BicicletaId" Text="Campo requerido" />
+                        </div>
+                        <div class="col-12">
+                            <RadzenLabel Text="Descripción" Component="Descripcion" />
+                            <RadzenTextBox Name="Descripcion" @bind-Value="mantenimiento.Descripcion" Style="width: 100%;" />
+                            <RadzenRequiredValidator Component="Descripcion" Text="Campo requerido" />
+                        </div>
 
-                    <div class="col-12">
-                        <RadzenLabel Text="Observación" Component="Observacion" />
-                        <RadzenTextArea Name="Observacion"
-                                        @bind-Value="mantenimiento.Observacion"
-                                        Style="width: 100%;"
-                                        Cols="2"
-                                        Rows="4" />
+                        <div class="col-12">
+                            <RadzenLabel Text="Observación" Component="Observacion" />
+                            <RadzenTextArea Name="Observacion"
+                                            @bind-Value="mantenimiento.Observacion"
+                                            Style="width: 100%;"
+                                            Cols="2"
+                                            Rows="4" />
+                        </div>
+                        
+                        
+                        <div class="col-12 col-md-6">
+                            <RadzenLabel Text="Estado del Mantenimiento" Component="EstadoMantenimientoId" />
+                            <RadzenDropDown @bind-Value=@mantenimiento.EstadoMantenimientoId
+                                            Data=@estados
+                                            TextProperty="descripcion"
+                                            ValueProperty="idEstado"
+                                            Style="width: 100%;"
+                                            Name="EstadoMantenimientoId" />
+                            <RadzenRequiredValidator Component="EstadoMantenimientoId" Text="Campo requerido" />
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <RadzenLabel Text="Fecha Fin (opcional)" Component="FechaFin" />
+                            <RadzenDatePicker Name="FechaFin" @bind-Value="mantenimiento.FechaFin" Style="width: 100%;" />
+                        </div>
+                        <div class="col-12 d-grid gap-2 mt-4">
+                            <RadzenButton Text="Registrar Mantenimiento"
+                                          ButtonType="ButtonType.Submit"
+                                          ButtonStyle="ButtonStyle.Success"
+                                          IsBusy="@insert"
+                                          BusyText="Guardando..."
+                                          Style="width: 100%; font-size: 1rem; padding: 0.75rem;" />
+                        </div>
                     </div>
-
-                    <div class="col-12 col-md-6">
-                        <RadzenLabel Text="Fecha Fin (opcional)" Component="FechaFin" />
-                        <RadzenDatePicker Name="FechaFin" @bind-Value="mantenimiento.FechaFin" Style="width: 100%;" />
-                    </div>
-
-                    <div class="col-12 col-md-6">
-                        <RadzenLabel Text="Estado del Mantenimiento" Component="EstadoMantenimientoId" />
-                        <RadzenDropDown @bind-Value=@mantenimiento.EstadoMantenimientoId
-                                        Data=@estados
-                                        TextProperty="descripcion"
-                                        ValueProperty="idEstado"
-                                        Style="width: 100%;"
-                                        Name="EstadoMantenimientoId" />
-                        <RadzenRequiredValidator Component="EstadoMantenimientoId" Text="Campo requerido" />
-                    </div>
-
-                    <div class="col-12 d-grid gap-2 mt-4">
-                        <RadzenButton Text="Registrar Mantenimiento"
-                                      ButtonType="ButtonType.Submit"
-                                      ButtonStyle="ButtonStyle.Success"
-                                      IsBusy="@insert"
-                                      BusyText="Guardando..."
-                                      Style="width: 100%; font-size: 1rem; padding: 0.75rem;" />
-                    </div>
-                </div>
-            </RadzenTemplateForm>
+                </RadzenTemplateForm>
+            </div>
         </div>
-    </div>
-</RadzenCard>
+    </RadzenCard>
+}
+else
+{
+    <CargandoComponent />
+}
+
 @code {
 
 }

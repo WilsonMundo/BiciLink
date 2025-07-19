@@ -1,4 +1,4 @@
-﻿using Domain.Interface.DataAcces;
+﻿using Domain.Interface;
 using Domain.ModelContext;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -11,46 +11,66 @@ namespace DataAccess.Repository.RMaintenance
 {
     public class MaintenanceRepository : IMaintenanceRepository
     {
+
         private readonly SystemDBContext _dbContext;
 
         public MaintenanceRepository(SystemDBContext dBContext)
         {
             this._dbContext = dBContext;
         }
-        public async Task<EstadoMantenimiento> Addasync(EstadoMantenimiento estado)
+        public async Task<Mantenimiento> AddAsync(Mantenimiento mantenimiento)
         {
-            _dbContext.Add(estado);
+            _dbContext.Add(mantenimiento);
             await _dbContext.SaveChangesAsync();
-            return estado;
+            return mantenimiento;
         }
-        public async Task<List<EstadoMantenimiento>> GetEstadoMantenimientoAsync()
-        {
-            return await _dbContext.EstadoMantenimientos.ToListAsync();
-        }
-        public async Task<EstadoMantenimiento?> GetEstadoMantenimiento(short idEstado)
-        {
-            return await _dbContext.EstadoMantenimientos.FirstOrDefaultAsync(x => x.EstadoMantenimientoId == idEstado);
-        }
-        public async Task<bool> SaveAsync()
-        {
-            return await _dbContext.SaveChangesAsync() > 0;
-        }
-        public async Task<bool> DeleteAsync(short id)
-        {
-            var entity = await _dbContext.EstadoMantenimientos
-                .FirstOrDefaultAsync(x => x.EstadoMantenimientoId == id);
 
-            if (entity == null)
+        public async Task<Mantenimiento?> GetMantenimiento(long mantenimientoId)
+        {
+            return await _dbContext.Mantenimientos
+                .Include(x => x.Bicicleta)
+                .Include(x => x.EstadoMantenimiento)
+                .FirstOrDefaultAsync(x => x.MantenimientoId == mantenimientoId);
+        }
+
+        public async Task<List<Mantenimiento>> GetMantenimientos()
+        {
+            return await _dbContext.Mantenimientos
+                .Include(x => x.Bicicleta)
+                .Include(x => x.EstadoMantenimiento)
+                .ToListAsync();
+        }
+
+        public async Task<bool> AnyMantenimiento(long mantenimientoId)
+        {
+            return await _dbContext.Mantenimientos.AnyAsync(x => x.MantenimientoId == mantenimientoId);
+        }
+
+        public async Task<Mantenimiento?> UpdateAsync(Mantenimiento mantenimiento)
+        {
+            var existing = await _dbContext.Mantenimientos
+                .FirstOrDefaultAsync(x => x.MantenimientoId == mantenimiento.MantenimientoId);
+
+            if (existing == null)
+                return null;
+
+            _dbContext.Entry(existing).CurrentValues.SetValues(mantenimiento);
+            await _dbContext.SaveChangesAsync();
+            return existing;
+        }
+
+        public async Task<bool> DeleteAsync(long mantenimientoId)
+        {
+            var mantenimiento = await _dbContext.Mantenimientos
+                .FirstOrDefaultAsync(x => x.MantenimientoId == mantenimientoId);
+
+            if (mantenimiento == null)
                 return false;
 
-            _dbContext.EstadoMantenimientos.Remove(entity);
-            return await _dbContext.SaveChangesAsync() > 0;
-        }
-        public async Task<short> MaxIdAsync()
-        {
-            short idConsecutivo  = await _dbContext.EstadoMantenimientos.MaxAsync(x => (short?)x.EstadoMantenimientoId) ??0;            
-            idConsecutivo = (short)(idConsecutivo + 1); ;
-            return idConsecutivo;
+            _dbContext.Mantenimientos.Remove(mantenimiento);
+            await _dbContext.SaveChangesAsync();
+            return true;
         }
     }
 }
+

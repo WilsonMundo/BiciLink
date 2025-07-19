@@ -1,0 +1,124 @@
+﻿@page "/reservation"
+
+@inject NotificationService NotificationService
+@inject IRepository Repository
+@inject DialogService DialogService
+
+<PageTitle>Reserva</PageTitle>
+@if (flagCarga)
+{
+    <RadzenCard Class="p-4 mt-4">
+        <h3 class="text-center text-primary mb-4">Registrar Nueva Reserva</h3>
+
+        <div class="row">
+            <!-- Columna del formulario -->
+            <div class="col-md-8">
+                <RadzenTemplateForm @ref="form" Data="@reserva" TItem="ReservaDTO" Submit="@OnSubmit">
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <RadzenLabel Text="Selecciona una Bicicleta" Component="BicicletaId" />
+                            <RadzenDropDown @bind-Value="@reserva.BicicletaId"
+                                            Data="@bicycles"
+                                            TextProperty="Descripcion"
+                                            ValueProperty="bicycleId"
+                                            Style="width: 100%;"
+                                            Name="BicicletaId"
+                                            Change="@OnBicicletaChanged" />
+                            <RadzenRequiredValidator Component="BicicletaId" Text="Campo requerido" />
+                        </div>
+
+                        <div class="col-md-6">
+                            <RadzenLabel Text="Estación de Origen" Component="EstacionOrigenId" />
+                            <RadzenDropDown @bind-Value="@reserva.EstacionOrigenId"
+                                            Data="@estacionesOrigenFiltradas"
+                                            TextProperty="Nombre"
+                                            ValueProperty="estacionId"
+                                            Style="width: 100%;"
+                                            Name="EstacionOrigenId"
+                                            Change="@OnChangeEstacionOrigen" />
+                            <RadzenRequiredValidator Component="EstacionOrigenId" Text="Campo requerido" />
+                        </div>
+
+                        <div class="col-md-6">
+                            <RadzenLabel Text="Estación de Destino" Component="EstacionDestinoId" />
+                            <RadzenDropDown @bind-Value="@reserva.EstacionDestinoId"
+                                            Data="@estacionesDestinoFiltradas"
+                                            TextProperty="Nombre"
+                                            ValueProperty="estacionId"
+                                            Style="width: 100%;"
+                                            Name="EstacionDestinoId"
+                                            Change="@OnChangeEstacionDestino" />
+                            <RadzenRequiredValidator Component="EstacionDestinoId" Text="Campo requerido" />
+                        </div>
+
+                        <div class="col-12">
+                            <RadzenLabel Text="Fecha de Reserva" Component="FechaReserva" />
+                            <RadzenDatePicker Name="FechaReserva"
+                                              @bind-Value="reserva.FechaReserva"
+                                              Style="width: 100%;"
+                                              ShowTime="true"
+                                              HourFormat="12"
+                                              DateFormat="MM/dd/yyyy h:mm tt" />
+                            <RadzenRequiredValidator Component="FechaReserva" Text="Campo requerido" />
+                        </div>
+
+                        <div class="col-12 d-grid gap-2 mt-4">
+                            <RadzenButton Text="Registrar Reserva"
+                                          ButtonType="ButtonType.Submit"
+                                          ButtonStyle="ButtonStyle.Success"
+                                          IsBusy="@insertando"
+                                          BusyText="Guardando..."
+                                          Style="width: 100%; font-size: 1rem; padding: 0.75rem;" />
+                        </div>
+                    </div>
+                </RadzenTemplateForm>
+            </div>
+
+            <!-- Columna de imágenes -->
+            <div class="col-md-4 text-center">
+                @if (bicicletaSeleccionada != null)
+                {
+                    <img src="@bicicletaSeleccionada.Imagen" class="img-fluid rounded shadow mb-3" style="max-height: 200px;" />
+                    @if (!string.IsNullOrEmpty(bicicletaSeleccionada.Imagen1))
+                    {
+                        <img src="@bicicletaSeleccionada.Imagen1" class="img-fluid rounded shadow" style="max-height: 200px;" />
+                    }
+                }
+            </div>
+        </div>
+    </RadzenCard>
+}
+else
+{
+    <CargandoComponent />
+}
+
+@code {
+    void ShowNotificationWithCustomContent(string codigo)
+    {
+        NotificationService.Notify(new NotificationMessage
+                    {
+                        Severity = NotificationSeverity.Success,
+                        Duration = 20000,
+                        SummaryContent = ns => @<RadzenText TextStyle="TextStyle.H6" Class="text-success">
+        ✅ ¡Reserva completada!
+    </RadzenText>,
+              DetailContent = ns => @<div>
+        <RadzenText TextStyle="TextStyle.Body1">
+            Guarda este código, lo necesitarás al presentarte en la estación:
+        </RadzenText>
+
+        <RadzenText TextStyle="TextStyle.H5" Class="fw-bold d-block mt-1">@codigo</RadzenText>
+
+        <RadzenText TextStyle="TextStyle.Body2" Class="mt-2 d-block">
+            Puedes consultarlo más tarde en la sección <b>Mis Reservas</b>.
+        </RadzenText>
+
+        <RadzenButton Text="Cerrar"
+                      Click="@(args => ns.Messages.Clear())"
+                      Style="margin-top: 10px;"
+                      ButtonStyle="ButtonStyle.Light" />
+    </div>
+       });
+    }
+}

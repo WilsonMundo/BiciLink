@@ -11,6 +11,7 @@ namespace BiciReserva.Client.Pages.Login
         private bool Guardando;
         private async Task OnSubmit()
         {
+            Guardando = !Guardando;
             var httpResponse = await repository.Post<UserRegister>("api/v1/Autenticacion/register", registerUser);
             if (httpResponse.Error)
             {

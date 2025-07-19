@@ -1,6 +1,9 @@
-﻿using BusinessLogic.Interface;
-using Domain.Interface.DataAcces;
+﻿using AutoMapper;
+using BusinessLogic.Interface;
+using Domain.Interface;
 using Domain.ModelContext;
+using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
 using Serilog;
 using Shared.DTO;
 using System;
@@ -11,137 +14,195 @@ using System.Threading.Tasks;
 
 namespace BusinessLogic.Services.SMaintenance
 {
-    public class MaintenanceService : IMaintenanceService
+    public class MaintenanceService: IMaintenanceService
     {
-        private readonly IMaintenanceRepository _maintenance;
-
-        public MaintenanceService(IMaintenanceRepository maintenance)
+        private readonly IMaintenanceRepository _maintenanceRepository;
+        private readonly IMapper _mapper;
+        public MaintenanceService(IMaintenanceRepository maintenance, IMapper mapper)
         {
-            this._maintenance = maintenance;
-           
+            this._maintenanceRepository = maintenance;
+            this._mapper = mapper;
         }
-        public async Task<ResultAPI<GStateGeneralDTO>> PostState(GEstadoDTO estadoDTO)
+
+        public async Task<ResultAPI<MantenimientoDTO>> PostMaintenance(MantenimientoDTO mantenimientoDTO, long idUsuario)
         {
-            ResultAPI<GStateGeneralDTO> result = new ResultAPI<GStateGeneralDTO>(true);
+            var result = new ResultAPI<MantenimientoDTO>(true);
+
             try
             {
-                short consecutivo = await _maintenance.MaxIdAsync();
-                EstadoMantenimiento estadoBicicletum = new EstadoMantenimiento()
+                var mantenimiento = _mapper.Map<Mantenimiento>(mantenimientoDTO);
+                mantenimiento.TecnicoId = idUsuario;
+
+                var data = await _maintenanceRepository.AddAsync(mantenimiento);
+
+                result.result = new MantenimientoDTO
                 {
-                    Descripcion = estadoDTO.Descripcion,
-                    EstadoMantenimientoId = consecutivo,
+                    MantenimientoId = data.MantenimientoId,
+                    BicicletaId = data.BicicletaId,
+                    Descripcion = data.Descripcion,
+                    Observacion = data.Observacion,
+                    FechaFin = data.FechaFin,
+                    EstadoMantenimientoId = data.EstadoMantenimientoId,                   
                 };
 
-                var state = await _maintenance.Addasync(estadoBicicletum);
-
-                result.result = new GStateGeneralDTO()
-                {
-                    descripcion = estadoDTO.Descripcion,
-                    idEstado = state.EstadoMantenimientoId,
-                };
                 result.Ok(StatusHttpResponse.OK);
             }
             catch (Exception ex)
             {
-                result.message = "Se producto un error al crear Estado Bicicleta notificar a soporte";
+                result.message = "Se produjo un error al crear mantenimiento. Notificar a soporte.";
                 result.error = true;
                 result.code = StatusHttpResponse.InternalServerError;
                 Log.Error(ex.Message);
             }
+
             return result;
         }
-        public async Task<ResultAPI<GStateGeneralDTO>> PutState(GStateGeneralDTO gStateGeneral)
+        public async Task<ResultAPI<List<MantenimientoDTO>>> GetMaintenanceList()
         {
-            ResultAPI<GStateGeneralDTO> result = new ResultAPI<GStateGeneralDTO>(true);
+            var result = new ResultAPI<List<MantenimientoDTO>>();
             try
             {
-                var state = await _maintenance.GetEstadoMantenimiento(gStateGeneral.idEstado);
-                if (state != null)
-                {
-                    state.Descripcion = gStateGeneral.descripcion;
+                var data = await _maintenanceRepository.GetMantenimientos();
 
-                    bool procesado = await _maintenance.SaveAsync();
-                    if (procesado)
-                    {
-                        result.OkData(StatusHttpResponse.OK, new GStateGeneralDTO()
-                        {
-                            descripcion = state.Descripcion,
-                            idEstado = state.EstadoMantenimientoId,
-                        });
-
-                    }
-                    else
-                    {
-                        result.error = true;
-                        result.code = StatusHttpResponse.BadRequest;
-                        result.message = "Error estado no existe";
-                    }
-                }
-                else
+                result.result = data.Select(x => new MantenimientoDTO
                 {
-                    result.error = true;
-                    result.code = StatusHttpResponse.BadRequest;
-                    result.message = "Error estado no existe";
-                }
-            }
-            catch (Exception ex)
-            {
-                result.message = "Se producto un error al Editar Estado Bicicleta notificar a soporte";
-                result.error = true;
-                result.code = StatusHttpResponse.InternalServerError;
-                Log.Error(ex.Message, "Editar Estado Bicicleta");
-            }
-            return result;
-        }
-        public async Task<ResultAPI<List<GStateGeneralDTO>>> GetState()
-        {
-            ResultAPI<List<GStateGeneralDTO>> result = new ResultAPI<List<GStateGeneralDTO>>(true);
-            try
-            {
-                var data = await _maintenance.GetEstadoMantenimientoAsync();
-                result.result = data.Select(x => new GStateGeneralDTO()
-                {
-                    descripcion = x.Descripcion,
-                    idEstado = x.EstadoMantenimientoId,
+                    MantenimientoId = x.MantenimientoId,
+                    BicicletaId = x.BicicletaId,
+                    Descripcion = x.Descripcion,
+                    Observacion = x.Observacion,
+                    FechaFin = x.FechaFin,
+                    EstadoMantenimientoId = x.EstadoMantenimientoId,
+                    EstadoMantenimiento = x.EstadoMantenimiento?.Descripcion
                 }).ToList();
-                result.Ok(StatusHttpResponse.OK);
 
+                result.Ok(StatusHttpResponse.OK);
             }
             catch (Exception ex)
             {
-                result.message = "Se producto un error al Listar Estado Bicicleta notificar a soporte";
+                result.message = "Error al obtener lista de mantenimientos. Notificar a soporte.";
                 result.error = true;
                 result.code = StatusHttpResponse.InternalServerError;
                 Log.Error(ex.Message);
             }
+
             return result;
         }
 
-        public async Task<ResultAPI<object>> DeleteState(short id)
+        public async Task<ResultAPI<MantenimientoDTO>> GetMaintenanceById(long mantenimientoId)
         {
-            ResultAPI<object> result = new ResultAPI<object>(true);
+            var result = new ResultAPI<MantenimientoDTO>();
             try
             {
-                bool aplicado = await _maintenance.DeleteAsync(id);
-                if (aplicado)
+                var data = await _maintenanceRepository.GetMantenimiento(mantenimientoId);
+
+                if (data == null)
                 {
-                    result.Ok(StatusHttpResponse.OK);
-                }
-                else
-                {
+                    result.code = StatusHttpResponse.NotFound;
+                    result.message = "Mantenimiento no encontrado.";
                     result.error = true;
-                    result.code = StatusHttpResponse.BadRequest;
-                    result.message = "Error estado no existe";
+                    return result;
                 }
 
+                result.result = new MantenimientoDTO
+                {
+                    MantenimientoId = data.MantenimientoId,
+                    BicicletaId = data.BicicletaId,
+                    Descripcion = data.Descripcion,
+                    Observacion = data.Observacion,
+                    FechaFin = data.FechaFin,
+                    EstadoMantenimientoId = data.EstadoMantenimientoId,
+                    EstadoMantenimiento = data.EstadoMantenimiento?.Descripcion
+                };
+
+                result.Ok(StatusHttpResponse.OK);
             }
             catch (Exception ex)
             {
-                result.message = "Se producto un error al eliminar Estado Bicicleta notificar a soporte";
+                result.message = "Error al obtener mantenimiento. Notificar a soporte.";
                 result.error = true;
                 result.code = StatusHttpResponse.InternalServerError;
                 Log.Error(ex.Message);
             }
+
+            return result;
+        }
+        public async Task<ResultAPI<MantenimientoDTO>> PutMaintenance(MantenimientoDTO mantenimientoDTO)
+        {
+            var result = new ResultAPI<MantenimientoDTO>(true);
+
+            try
+            {
+                var existing = await _maintenanceRepository.GetMantenimiento(mantenimientoDTO.MantenimientoId);
+                if (existing == null)
+                {
+                    result.code = StatusHttpResponse.NotFound;
+                    result.message = "Mantenimiento no encontrado.";
+                    result.error = true;
+                    return result;
+                }
+
+                var entityToUpdate = _mapper.Map<Mantenimiento>(mantenimientoDTO);
+                var updated = await _maintenanceRepository.UpdateAsync(entityToUpdate);
+
+                if (updated == null)
+                {
+                    result.code = StatusHttpResponse.BadRequest;
+                    result.message = "No se pudo actualizar el mantenimiento.";
+                    result.error = true;
+                    return result;
+                }
+
+                result.result = new MantenimientoDTO
+                {
+                    MantenimientoId = updated.MantenimientoId,
+                    BicicletaId = updated.BicicletaId,
+                    Descripcion = updated.Descripcion,
+                    Observacion = updated.Observacion,
+                    FechaFin = updated.FechaFin,
+                    EstadoMantenimientoId = updated.EstadoMantenimientoId,
+                    EstadoMantenimiento = updated.EstadoMantenimiento?.Descripcion
+                };
+
+                result.Ok(StatusHttpResponse.OK);
+            }
+            catch (Exception ex)
+            {
+                result.message = "Error al actualizar mantenimiento. Notificar a soporte.";
+                result.error = true;
+                result.code = StatusHttpResponse.InternalServerError;
+                Log.Error(ex.Message);
+            }
+
+            return result;
+        }
+        public async Task<ResultAPI<bool>> DeleteMaintenance(long mantenimientoId)
+        {
+            var result = new ResultAPI<bool>(true);
+
+            try
+            {
+                var deleted = await _maintenanceRepository.DeleteAsync(mantenimientoId);
+                if (!deleted)
+                {
+                    result.code = StatusHttpResponse.NotFound;
+                    result.message = "Mantenimiento no encontrado o ya eliminado.";
+                    result.error = true;
+                    result.result = false;
+                    return result;
+                }
+
+                result.result = true;
+                result.Ok(StatusHttpResponse.OK);
+            }
+            catch (Exception ex)
+            {
+                result.message = "Error al eliminar mantenimiento. Notificar a soporte.";
+                result.error = true;
+                result.code = StatusHttpResponse.InternalServerError;
+                result.result = false;
+                Log.Error(ex.Message);
+            }
+
             return result;
         }
     }

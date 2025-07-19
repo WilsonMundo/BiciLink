@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Domain.Interface.DataAcces
 {
-    public interface  IMaintenanceRepository
+    public interface  IStateMaintenanceRepository
     {
         Task<EstadoMantenimiento> Addasync(EstadoMantenimiento estado);
         Task<List<EstadoMantenimiento>> GetEstadoMantenimientoAsync();

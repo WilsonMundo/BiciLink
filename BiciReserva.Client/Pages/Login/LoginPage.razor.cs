@@ -15,6 +15,7 @@ namespace BiciReserva.Client.Pages.Login
        
         private async Task OnSubmit()
         {
+            Enviar = !Enviar;
             var httpResponse = await repository.Post<UserInfo>("api/v1/Autenticacion/login", userInfo);
             if (httpResponse.Error)
             {

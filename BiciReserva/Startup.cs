@@ -26,6 +26,10 @@ using BusinessLogic.Services.SBicicleta;
 using BusinessLogic.Services.SStation;
 using DataAccess.Repository.RMaintenance;
 using BusinessLogic.Services.SMaintenance;
+using Domain.Interface;
+
+using BusinessLogic.Services.SReserva;
+using DataAccess.Repository.RReserva;
 
 namespace BiciReserva
 {
@@ -166,8 +170,14 @@ namespace BiciReserva
             services.AddScoped<IBicycleService, BicycleService>();
             services.AddScoped<StateBicycleService>();
             services.AddScoped<IStationService, StationService>();
+            services.AddScoped<IStateMaintenanceRepository, StateMaintenanceRepository>();
+            services.AddScoped<IStateMaintenanceService, StateMaintenanceService>();
             services.AddScoped<IMaintenanceRepository, MaintenanceRepository>();
-            services.AddScoped<IMaintenanceService,MaintenanceService>();
+            services.AddScoped<IMaintenanceService,  MaintenanceService>();
+            services.AddScoped<IEstadoReservaRepository, EstadoReservaRepository>();
+            services.AddScoped<IStateReservaService, StateReservaService>();
+            services.AddScoped<IReservaRepository,  ReservaRepository>();
+            services.AddScoped<IReservaService,  ReservaService>();
         }
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
